@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="311.0" prefWidth="414.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.zerorooot.view.OffLineAddView">
+   <TextArea fx:id="textArea" prefHeight="200.0" prefWidth="414.0" promptText="请输入URL地址/磁力链接/电驴地址,每行一条，回车换行。百度网盘为人工代下载，仅对订阅用户开放，在密码处填写分享码，用户名留空。我们可能会对下载链接进行审查，请确保下载链接合乎当地法规。" />
+   <TextField fx:id="password" layoutX="125.0" layoutY="220.0" promptText="请输入提取码/密码" />
+   <Button fx:id="addUrl" layoutX="186.0" layoutY="263.0" mnemonicParsing="false" onMouseClicked="#addUrl" text="添加" />
+</AnchorPane>
