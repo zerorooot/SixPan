@@ -1,6 +1,6 @@
 # SixPan
 
-用java写的[6盘](https://v3-beta.6pan.cn/)客户端
+用java写的[6盘](https://v3-beta.6pan.cn/)GUI客户端
 
 ## 使用
 
@@ -8,6 +8,7 @@
 git clone git@github.com:zerorooot/SixPan.git
 cd SixPan
 mvn assembly:assembly
+java -jar target/SixPan-1.0-jar-with-dependencies.jar
 ```
 
 
