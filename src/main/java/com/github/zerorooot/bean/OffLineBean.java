@@ -17,12 +17,13 @@ public class OffLineBean {
     private String savePath;
     private String accessPath;
     private String textLink;
+    private String accessIdentity;
     private int progress;
     private long size;
     private long createTime;
     private String time;
     private String fileMime;
-    private boolean directory=true;
+    private boolean directory;
     private TableCheckBox checkBox;
     private String taskIdentity;
 }

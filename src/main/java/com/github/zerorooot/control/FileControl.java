@@ -117,10 +117,10 @@ public class FileControl {
         post.body(jsonObject.toString()).executeAsync();
     }
 
-    public String download(FileBean fileBean) {
+    public String download(String  identity) {
         String url = ApiUrl.DOWNLOAD;
         JSONObject jsonObject = new JSONObject();
-        jsonObject.set("identity", fileBean.getIdentity());
+        jsonObject.set("identity", identity);
         HttpRequest post = HttpUtil.createPost(url);
         post.header("cookie", cookie);
         post.body(jsonObject.toString());
@@ -179,8 +179,8 @@ public class FileControl {
         for (JSONObject o : returnJson.jsonIter()) {
             OffLineBean offLineBean = o.toBean(OffLineBean.class);
             offLineBean.setTime(DateUtil.date(offLineBean.getCreateTime()).toString());
-            if (!"text/directory".equals(offLineBean.getFileMime())) {
-                offLineBean.setDirectory(false);
+            if ("text/directory".equals(offLineBean.getFileMime())) {
+                offLineBean.setDirectory(true);
             }
             offLineBean.setCheckBox(new TableCheckBox());
             arrayList.add(offLineBean);

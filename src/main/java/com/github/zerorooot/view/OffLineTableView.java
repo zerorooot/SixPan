@@ -23,18 +23,24 @@ import java.util.Objects;
  * @Author: zero
  * @Date: 2020/8/9 20:34
  */
-@AllArgsConstructor
 @NoArgsConstructor
 public class OffLineTableView extends Application {
     private String cookie;
     private String path;
+    protected TableView<OffLineBean> table;
 
+
+    public OffLineTableView(String cookie, String path) {
+        this.cookie = cookie;
+        this.path = path;
+    }
 
     @Override
     public void start(Stage stage) throws Exception {
         BorderPane borderPane = new BorderPane();
         FileServe fileServe = new FileServe(cookie);
         TableView<OffLineBean> table = new TableView<>();
+        this.table = table;
         ObservableList<OffLineBean> fileBeanObservableList = FXCollections.observableArrayList();
 
         MenuItem offLineAdd = new MenuItem("添加离线任务");

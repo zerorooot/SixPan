@@ -48,7 +48,14 @@ public class FileServe {
     }
 
     public String download(FileBean fileBean) {
-        return fileControl.download(fileBean);
+        return fileControl.download(fileBean.getIdentity());
+    }
+
+    public String download(OffLineBean offLineBean) {
+        return fileControl.download(offLineBean.getAccessIdentity());
+    }
+    public String download(String identity) {
+        return fileControl.download(identity);
     }
 
     public int addOffLine(String path, String text, String password) {

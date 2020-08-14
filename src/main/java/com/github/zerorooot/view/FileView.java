@@ -1,6 +1,7 @@
 package com.github.zerorooot.view;
 
 
+import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.serve.FileServe;
 import javafx.collections.FXCollections;
 import com.github.zerorooot.bean.FileBean;
@@ -414,6 +415,35 @@ public class FileView extends Application {
             try {
                 offLineTableView.start(stages);
                 stages.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, windowEvent -> existTable = false);
+
+                offLineTableView.table.setOnMouseClicked(e1->{
+                    OffLineBean selectedItem = offLineTableView.table.getSelectionModel().getSelectedItem();
+                    if (e1.getClickCount() == 2) {
+                        //进入文件夹
+                        if (selectedItem.isDirectory()) {
+                            fileBeanObservableList.removeAll(fileBeanObservableList);
+                            fileBeanObservableList.addAll(fileServe.getFileAll(selectedItem.getAccessPath()));
+                            table.setItems(fileBeanObservableList);
+                            label.setText(selectedItem.getAccessPath());
+                        //fileview获取焦点
+                            table.getScene().getWindow().requestFocus();
+                        }else {
+                            //视频浏览
+                            if (selectedItem.getFileMime().contains("video")) {
+                                String download = fileServe.download(selectedItem);
+                                VideoView videoView = new VideoView(download, selectedItem.getName());
+                                Stage stage1 = new Stage();
+                                videoView.start(stage1);
+                                stage1.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, b -> {
+                                    videoView.embeddedMediaPlayer.controls().stop();
+                                    videoView.embeddedMediaPlayer.release();
+                                    videoView.mediaPlayerFactory.release();
+                                });
+                            }
+                        }
+                    }
+                });
+
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
