@@ -59,7 +59,7 @@ public class OffLineAddView extends Application {
     @FXML
     public void addUrl() {
         if ("".equals(password.getText())) {
-            fileServe.addOffLine(path, textArea.getText(), null);
+            fileServe.addOffLine(path, textArea.getText().replaceAll(" ", ""), null);
         }
         fileServe.addOffLine(path, textArea.getText(), password.getText());
         if (!existTable) {
