@@ -33,6 +33,7 @@ FileView--右键-->editItem(重新命名)
 FileView--右键-->createFolderItem(新建文件)
 FileView--右键-->moveFileItem(移动文件)
 FileView--右键-->searchFileItem(搜索文件)
+FileView--右键-->fileInfoItem(文件详情)
 FileView--右键-->flushItem(刷新文件)
 FileView--右键-->deleteItem(删除文件)
 FileView--右键-->addOffLineItem(离线下载)
@@ -47,6 +48,8 @@ VideoView--方向键下-->减小音量
 VideoView--方向键左-->快退15秒
 VideoView--方向键右-->快进15秒
 VideoView--双击-->全屏模式
+VideoView--A键-->顺时针旋转视频
+VideoView--D键-->逆时针旋转视频
 FileView--双击图片文件-->PictureView
 PictureView--方向键左-->上一张
 PictureView--方向键右-->下一张

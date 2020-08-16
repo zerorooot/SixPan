@@ -4,6 +4,7 @@ package com.github.zerorooot.view;
  * @Author: zero
  * @Date: 2020/8/6 19:29
  */
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressBar;
@@ -13,7 +14,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
+import uk.co.caprica.vlcj.media.*;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+
 
 import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactory.videoSurfaceForImageView;
 
@@ -36,8 +39,10 @@ public class VideoView extends Application {
 
     @Override
     public final void start(Stage primaryStage) {
+        double screenWidth = 1294;
+        double screenHeight = 797;
         BorderPane root = new BorderPane();
-        Scene scene = new Scene(root, 1280, 760, Color.BLACK);
+        Scene scene = new Scene(root,1280,755,  Color.BLACK);
         ProgressBar progressBar = new ProgressBar(0);
         ImageView videoImageView = new ImageView();
         videoImageView.setPreserveRatio(true);
@@ -45,19 +50,13 @@ public class VideoView extends Application {
         embeddedMediaPlayer.videoSurface().set(videoSurfaceForImageView(videoImageView));
 
         root.setCenter(videoImageView);
-        scene.widthProperty().addListener(e->{
-            videoImageView.setFitWidth(scene.getWidth());
-        });
-        scene.heightProperty().addListener(e->{
-            videoImageView.setFitHeight(scene.getWidth() - progressBar.getHeight());
-        });
-        primaryStage.setResizable(false);
 
-       scene.setOnMouseClicked(e->{
-           if (e.getClickCount() == 2) {
-               primaryStage.setFullScreen(true);
-           }
-       });
+
+        scene.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                primaryStage.setFullScreen(true);
+            }
+        });
 
         progressBar.setOnMouseClicked(ev ->
         {
@@ -74,9 +73,11 @@ public class VideoView extends Application {
 
         scene.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.RIGHT) {
+                primaryStage.setTitle(name + "  " + embeddedMediaPlayer.status().position());
                 embeddedMediaPlayer.controls().skipTime(15000);
             }
             if (keyEvent.getCode() == KeyCode.LEFT) {
+                primaryStage.setTitle(name + "  " + embeddedMediaPlayer.status().position());
                 embeddedMediaPlayer.controls().skipTime(-15000);
             }
             if (keyEvent.getCode() == KeyCode.UP) {
@@ -87,20 +88,51 @@ public class VideoView extends Application {
             }
             if (keyEvent.getCode() == KeyCode.ESCAPE) {
                 primaryStage.setFullScreen(false);
+            }
+            //顺时针旋转视频
+            if (keyEvent.getCode() == KeyCode.A) {
+                videoImageView.setRotate(videoImageView.getRotate() + 90);
+            }
+            //逆时针旋转视频
+            if (keyEvent.getCode() == KeyCode.D) {
+                videoImageView.setRotate(videoImageView.getRotate() - 90);
 
             }
             progressBar.setProgress(embeddedMediaPlayer.status().position());
-
         });
-        scene.setOnKeyReleased(keyEvent->{
+
+        scene.widthProperty().addListener(e -> {
+            videoImageView.setFitWidth(scene.getWidth());
+        });
+        scene.heightProperty().addListener(e -> {
+            videoImageView.setFitHeight(scene.getWidth() - progressBar.getHeight());
+        });
+
+        scene.setOnKeyReleased(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.SPACE) {
                 embeddedMediaPlayer.controls().pause();
+            }
+        });
+
+        //调整窗口大小
+        embeddedMediaPlayer.media().events().addMediaEventListener(new MediaEventAdapter() {
+            @Override
+            public void mediaDurationChanged(Media media, long newDuration) {
+                double videoWidth = embeddedMediaPlayer.video().videoDimension().getWidth();
+                double videoHeight = embeddedMediaPlayer.video().videoDimension().getHeight();
+                if ((videoHeight < screenHeight & videoWidth > screenWidth) || (videoHeight > screenHeight & videoWidth < screenWidth)) {
+                    primaryStage.setWidth(Double.min(videoWidth, screenWidth));
+                    primaryStage.setHeight(Double.min(videoHeight, screenHeight));
+                }
+
+
             }
         });
 
         primaryStage.setTitle(name);
         primaryStage.setScene(scene);
         primaryStage.show();
+
     }
 
 }
