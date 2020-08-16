@@ -23,18 +23,40 @@ public class FileControl {
     private final String cookie;
 
     //{"directory":true,"parentPath":"/新建文件夹","limit":-1}
+
+    /**
+     * 获取所有文件
+     * @param parentPath 文件路径
+     * @return
+     */
     public ArrayList<FileBean> getFileAll(String parentPath) {
         return getFile(parentPath, null);
     }
 
+    /**
+     * 获取文件目录
+     * @param parentPath 文件路径
+     * @return
+     */
     public ArrayList<FileBean> getDirectory(String parentPath) {
         return getFile(parentPath, true);
     }
 
+    /**
+     * 获取文件名
+     * @param parentPath 文件路径
+     * @return
+     */
     public ArrayList<FileBean> getNonDirectory(String parentPath) {
         return getFile(parentPath, false);
     }
 
+    /**
+     * 获取文件
+     * @param parentPath 文件路径
+     * @param directory 是否是目录
+     * @return
+     */
     public ArrayList<FileBean> getFile(String parentPath, Boolean directory) {
         String url = ApiUrl.LIST;
         JSONObject bodyJson = new JSONObject();
@@ -69,7 +91,11 @@ public class FileControl {
         return fileBeanLinkedList;
     }
 
-
+    /**
+     * 删除文件
+     * @param fileBeanArrayList 要删除的list
+     * @return
+     */
     public int delete(ArrayList<FileBean> fileBeanArrayList) {
         String url = ApiUrl.DELETE;
         HttpRequest post = HttpUtil.createPost(url);
@@ -83,6 +109,11 @@ public class FileControl {
 
     }
 
+    /**
+     * 重命名文件
+     * @param fileBean 要重命名的bean
+     * @param newName 新文件名
+     */
     public void rename(FileBean fileBean, String newName) {
         String url = ApiUrl.RENAME;
         JSONObject jsonObject = new JSONObject();
@@ -94,6 +125,12 @@ public class FileControl {
         post.executeAsync();
     }
 
+    /**
+     * 移动文件
+     * @param fileBeanArrayList 要移动的list
+     * @param newPath 移动的目录
+     * @return
+     */
     public int move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
         String url = ApiUrl.MOVE;
         JSONObject jsonObject = new JSONObject();
@@ -107,6 +144,11 @@ public class FileControl {
         return returnJson.getInt("successCount");
     }
 
+    /**
+     * 创建新文件夹
+     * @param path 新文件夹的目录
+     * @param folderName 新文件夹名
+     */
     public void createFolder(String path, String folderName) {
         String url = ApiUrl.CREATEFOLDER;
         JSONObject jsonObject = new JSONObject();
@@ -117,6 +159,11 @@ public class FileControl {
         post.body(jsonObject.toString()).executeAsync();
     }
 
+    /**
+     * 获取文件下载url
+     * @param identity 文件识别号
+     * @return
+     */
     public String download(String  identity) {
         String url = ApiUrl.DOWNLOAD;
         JSONObject jsonObject = new JSONObject();
@@ -129,6 +176,10 @@ public class FileControl {
         return returnJson.getStr("downloadAddress");
     }
 
+    /**
+     * 查看当前离线下载的配额
+     * @return
+     */
     public String quota() {
         String url = ApiUrl.QUOTA;
         JSONObject jsonObject = new JSONObject();
@@ -140,7 +191,12 @@ public class FileControl {
         return returnJson.getStr("available") + "/" + returnJson.getStr("dailyQuota");
     }
 
-
+    /**
+     * 离线下载百度网盘文件
+     * @param textLink 离线下载的url
+     * @param password 离线下载的密码
+     * @return
+     */
     public String parse(String textLink, String password) {
         String url = ApiUrl.PARSE;
         JSONObject jsonObject = new JSONObject();
@@ -158,6 +214,11 @@ public class FileControl {
         return returnJson.getStr("hash");
     }
 
+    /**
+     * 离线下载文件
+     * @param json 文件的url
+     * @return
+     */
     public int addOffLine(String json) {
         String url = ApiUrl.ADDOFFLINE;
         HttpRequest post = HttpUtil.createPost(url);
@@ -166,6 +227,10 @@ public class FileControl {
         return returnJson.getInt("successCount");
     }
 
+    /**
+     * 获取离线下载列表
+     * @return
+     */
     public ArrayList<OffLineBean> getOffLine() {
         String url = ApiUrl.OFFLINELIST;
         HttpRequest post = HttpUtil.createPost(url);
@@ -189,6 +254,10 @@ public class FileControl {
         return arrayList;
     }
 
+    /**
+     * 把离线已完成的文件从离线列表中移除(不删除文件)
+     * @return
+     */
     public int deleteComplete() {
         String url = ApiUrl.DELETECOMPLETE;
         HttpRequest post = HttpUtil.createPost(url);
@@ -201,6 +270,11 @@ public class FileControl {
         return returnJson.getInt("successCount");
     }
 
+    /**
+     * 删除某离线文件
+     * @param offLineBeanArrayList 要删除的list
+     * @return
+     */
     public int offLineDelete(ArrayList<OffLineBean> offLineBeanArrayList) {
         String url = ApiUrl.OFFLINEDELETE;
         HttpRequest post = HttpUtil.createPost(url);
@@ -213,6 +287,40 @@ public class FileControl {
         post.body(jsonObject.toString());
         JSONObject returnJson = new JSONObject(post.execute().body());
         return returnJson.getInt("successCount");
+    }
+
+    /**
+     * 搜索文件
+     * @param fileName 文件名
+     * @return
+     */
+    public ArrayList<FileBean> searchFile(String fileName) {
+        String url = ApiUrl.LIST;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.set("limit", -1);
+        jsonObject.set("name", fileName);
+        jsonObject.set("parentIdentity", "::all");
+        HttpRequest post = HttpUtil.createPost(url);
+        post.header("cookie", cookie);
+        post.body(jsonObject.toString());
+        JSONArray returnJson = new JSONObject(post.execute().body()).getJSONArray("dataList");
+        ArrayList<FileBean> fileBeanArrayList = new ArrayList<>();
+
+        for (int i = 0; i < returnJson.size(); i++) {
+            JSONObject object = returnJson.getJSONObject(i);
+            FileBean fileBean = object.toBean(FileBean.class);
+            fileBean.setDateTime(DateUtil.date(fileBean.getAtime()).toString());
+            String path = fileBean.getPath();
+            if (path.lastIndexOf("/") == 0) {
+                fileBean.setParentPath("/");
+            }else {
+                fileBean.setParentPath(path.substring(0, path.lastIndexOf("/")));
+            }
+            fileBean.setCheckBox(new TableCheckBox());
+
+            fileBeanArrayList.add(fileBean);
+        }
+        return fileBeanArrayList;
     }
 
 }

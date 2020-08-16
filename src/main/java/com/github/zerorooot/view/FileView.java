@@ -17,12 +17,17 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import lombok.NoArgsConstructor;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
@@ -91,15 +96,21 @@ public class FileView extends Application {
         MenuItem createFolderItem = getCreateFolderItem();
         //移动文件
         MenuItem moveFileItem = getMoveFileItem();
+        //搜索文件
+        MenuItem searchFileItem = getSearchFile();
         //刷新文件
         MenuItem flushItem = getFlushItem();
+        //获取文件相关信息
+        MenuItem fileInfoItem = getFileInfoItem();
         //删除文件
         MenuItem deleteItem = getDeleteItem();
         //离线下载
         MenuItem addOffLineItem = getAddOffLineItem();
         //离线列表
         MenuItem offLineViewltem = getOffLineViewltem();
-        ContextMenu menu = new ContextMenu(editItem, createFolderItem, moveFileItem, flushItem, deleteItem, addOffLineItem,
+        ContextMenu menu = new ContextMenu(editItem, createFolderItem, moveFileItem, searchFileItem, flushItem,
+                fileInfoItem, deleteItem,
+                addOffLineItem,
                 offLineViewltem);
         table.setContextMenu(menu);
 
@@ -256,7 +267,11 @@ public class FileView extends Application {
         return createFolderItem;
     }
 
-
+    /**
+     * 移动文件
+     *
+     * @return
+     */
     private MenuItem getMoveFileItem() {
         MenuItem moveFileItem = new MenuItem("移动文件");
         moveFileItem.setOnAction(e -> {
@@ -336,6 +351,25 @@ public class FileView extends Application {
         return moveFileItem;
     }
 
+    private MenuItem getSearchFile() {
+        MenuItem searchFileItem = new MenuItem("搜索文件");
+        searchFileItem.setOnAction(e -> {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("新建文件夹");
+            dialog.setHeaderText("文件夹名");
+            dialog.setContentText("请输入新的文件夹的名称：");
+            Optional<String> result = dialog.showAndWait();
+
+            //刷新
+            result.ifPresent(name -> {
+                fileBeanObservableList.removeAll(fileBeanObservableList);
+                fileBeanObservableList.addAll(fileServe.searchFile(name));
+                table.setItems(fileBeanObservableList);
+            });
+        });
+        return searchFileItem;
+    }
+
     /**
      * 刷新table
      *
@@ -349,6 +383,48 @@ public class FileView extends Application {
             table.setItems(fileBeanObservableList);
         });
         return flushItem;
+    }
+
+    /**
+     * 获取文件信息
+     * @return
+     */
+    private MenuItem getFileInfoItem() {
+        MenuItem fileInfoItem = new MenuItem("文件信息");
+        fileInfoItem.setOnAction(e -> {
+            StringBuffer stringBuffer = new StringBuffer();
+            getSelectFileBeanArrayList().forEach(s -> {
+                stringBuffer.append(s.toString());
+                stringBuffer.append("\n");
+            });
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("文件信息");
+            alert.setHeaderText(getSelectFileBeanArrayList().get(0).getName());
+
+            String fileInfo = stringBuffer.toString();
+
+
+            TextArea textArea = new TextArea(fileInfo);
+            textArea.setEditable(false);
+            textArea.setWrapText(true);
+
+            textArea.setMaxWidth(Double.MAX_VALUE);
+            textArea.setMaxHeight(Double.MAX_VALUE);
+            GridPane.setVgrow(textArea, Priority.ALWAYS);
+            GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+            GridPane gridPane = new GridPane();
+            gridPane.setMaxWidth(Double.MAX_VALUE);
+            gridPane.add(textArea, 0, 0);
+
+            alert.getDialogPane().setExpandableContent(gridPane);
+
+            alert.showAndWait();
+
+
+        });
+        return fileInfoItem;
     }
 
     /**
@@ -393,6 +469,7 @@ public class FileView extends Application {
             OffLineAddView offLineAddView = new OffLineAddView(label.getText(), cookie, existTable);
             Stage stages = new Stage();
             try {
+
                 offLineAddView.start(stages);
             } catch (Exception exception) {
                 exception.printStackTrace();
@@ -416,7 +493,7 @@ public class FileView extends Application {
                 offLineTableView.start(stages);
                 stages.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, windowEvent -> existTable = false);
 
-                offLineTableView.table.setOnMouseClicked(e1->{
+                offLineTableView.table.setOnMouseClicked(e1 -> {
                     OffLineBean selectedItem = offLineTableView.table.getSelectionModel().getSelectedItem();
                     if (e1.getClickCount() == 2) {
                         //进入文件夹
@@ -425,9 +502,9 @@ public class FileView extends Application {
                             fileBeanObservableList.addAll(fileServe.getFileAll(selectedItem.getAccessPath()));
                             table.setItems(fileBeanObservableList);
                             label.setText(selectedItem.getAccessPath());
-                        //fileview获取焦点
+                            //fileview获取焦点
                             table.getScene().getWindow().requestFocus();
-                        }else {
+                        } else {
                             //视频浏览
                             if (selectedItem.getFileMime().contains("video")) {
                                 String download = fileServe.download(selectedItem);

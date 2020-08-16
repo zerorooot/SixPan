@@ -22,7 +22,7 @@ java -jar target/SixPan-1.0-jar-with-dependencies.jar
 5. 查看离线下载列表
 6. 图片浏览
 7. 视频浏览(需要安装vlc)
-8. 增删改移文件(右键弹出)
+8. 增查删改移文件(右键弹出)
 
 流程
 
@@ -32,6 +32,7 @@ AppMain--启动-->LoginView--登录-->FileView
 FileView--右键-->editItem(重新命名)
 FileView--右键-->createFolderItem(新建文件)
 FileView--右键-->moveFileItem(移动文件)
+FileView--右键-->searchFileItem(搜索文件)
 FileView--右键-->flushItem(刷新文件)
 FileView--右键-->deleteItem(删除文件)
 FileView--右键-->addOffLineItem(离线下载)
@@ -45,6 +46,7 @@ VideoView--方向键上-->增加音量
 VideoView--方向键下-->减小音量
 VideoView--方向键左-->快退15秒
 VideoView--方向键右-->快进15秒
+VideoView--双击-->全屏模式
 FileView--双击图片文件-->PictureView
 PictureView--方向键左-->上一张
 PictureView--方向键右-->下一张

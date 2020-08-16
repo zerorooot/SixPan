@@ -20,44 +20,95 @@ public class FileServe {
         fileControl = new FileControl(cookie);
     }
 
+    /**
+     * 获取所有文件
+     * @param parentPath 路径
+     * @return
+     */
     public ArrayList<FileBean> getFileAll(String parentPath)  {
         return fileControl.getFileAll(parentPath);
     }
+
+    /**
+     * 获取文件夹
+     * @param parentPath 路径
+     * @return
+     */
     public ArrayList<FileBean> getDirectory(String parentPath) {
         return fileControl.getDirectory(parentPath);
     }
 
+    /**
+     * 获取非文件夹
+     * @param parentPath 路径
+     * @return
+     */
     public ArrayList<FileBean> getNonDirectory(String parentPath) {
         return fileControl.getNonDirectory(parentPath);
     }
 
+    /**
+     * 删除文件
+     * @param fileBeanArrayList 要删除的list
+     * @return
+     */
     public int delete(ArrayList<FileBean> fileBeanArrayList) {
         return fileControl.delete(fileBeanArrayList);
     }
 
+    /**
+     * 重命名文件
+     * @param fileBean 要重命名的bean
+     * @param newName 新名字
+     */
     public void rename(FileBean fileBean, String newName) {
         fileControl.rename(fileBean, newName);
     }
 
+    /**
+     * 移动文件
+     * @param fileBeanArrayList 要移动的list
+     * @param newPath 新目录
+     * @return
+     */
     public int move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
         return fileControl.move(fileBeanArrayList, newPath);
     }
 
+    /**
+     * 创建文件夹
+     * @param path 要创建的路径
+     * @param folderName 文件夹名称
+     */
     public void createFolder(String path, String folderName) {
         fileControl.createFolder(path, folderName);
     }
 
+    /**
+     * 获取下载地址
+     * @param fileBean bean
+     * @return
+     */
     public String download(FileBean fileBean) {
         return fileControl.download(fileBean.getIdentity());
     }
 
+    /**
+     * 获取下载地址
+     * @param offLineBean offlinebean
+     * @return
+     */
     public String download(OffLineBean offLineBean) {
         return fileControl.download(offLineBean.getAccessIdentity());
     }
-    public String download(String identity) {
-        return fileControl.download(identity);
-    }
 
+    /**
+     * 添加离线下载
+     * @param path 要离线下载的路径
+     * @param text 下载的url
+     * @param password 下载的密码
+     * @return
+     */
     public int addOffLine(String path, String text, String password) {
         String[] split = text.split("\n");
         JSONArray jsonArray = new JSONArray();
@@ -73,19 +124,46 @@ public class FileServe {
         return fileControl.addOffLine(jsonObject.toString());
     }
 
+    /**
+     * 获取离线下载列表
+     * @return
+     */
     public ArrayList<OffLineBean> getOffLine() {
         return fileControl.getOffLine();
     }
 
+    /**
+     * 获取离线下载的配额
+     * @return
+     */
     public String quota() {
         return fileControl.quota();
     }
 
+    /**
+     * 把离线已完成的文件从离线列表中移除(不删除文件)
+     * @return
+     */
     public int deleteComplete() {
         return fileControl.deleteComplete();
     }
+
+    /**
+     * 删除某离线文件
+     * @param offLineBeanArrayList
+     * @return
+     */
     public int offLineDelete(ArrayList<OffLineBean> offLineBeanArrayList) {
         return fileControl.offLineDelete(offLineBeanArrayList);
+    }
+
+    /**
+     * 搜索文件
+     * @param name 文件名
+     * @return
+     */
+    public ArrayList<FileBean> searchFile(String name) {
+        return fileControl.searchFile(name);
     }
 
 }
