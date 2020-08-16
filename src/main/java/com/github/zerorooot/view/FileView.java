@@ -7,7 +7,8 @@ import javafx.collections.FXCollections;
 import com.github.zerorooot.bean.FileBean;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -22,12 +23,8 @@ import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
 import javafx.stage.WindowEvent;
-import javafx.util.Callback;
 import lombok.NoArgsConstructor;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
@@ -466,11 +463,24 @@ public class FileView extends Application {
     private MenuItem getAddOffLineItem() {
         MenuItem addOffLineItem = new MenuItem("离线下载");
         addOffLineItem.setOnAction(e -> {
-            OffLineAddView offLineAddView = new OffLineAddView(label.getText(), cookie, existTable);
-            Stage stages = new Stage();
-            try {
+//            OffLineAddView offLineAddView = new OffLineAddView(label.getText(), cookie, existTable);
 
-                offLineAddView.start(stages);
+            try {
+//                offLineAddView.start(stages);
+                Stage stages = new Stage();
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/OffLineAddView.fxml"));
+
+                Parent root = loader.load();
+                stages.setScene(new Scene(root));
+                stages.setResizable(false);
+                stages.setTitle(label.getText()+"  "+fileServe.quota());
+                stages.show();
+
+                OffLineAddView offLineAddView = loader.getController();
+                offLineAddView.setCookie(cookie);
+                offLineAddView.setExistTable(existTable);
+                offLineAddView.setPath(label.getText());
+
             } catch (Exception exception) {
                 exception.printStackTrace();
             }

@@ -1,19 +1,19 @@
 package com.github.zerorooot.view;
 
 
-import com.github.zerorooot.bean.FileBean;
 import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.serve.FileServe;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class OffLineTableView extends Application {
     protected TableView<OffLineBean> table;
 
 
-    public OffLineTableView(String cookie, String path) {
+    public OffLineTableView( String path,String cookie) {
         this.cookie = cookie;
         this.path = path;
     }
@@ -49,10 +49,21 @@ public class OffLineTableView extends Application {
         MenuItem deleteCurrent = new MenuItem("删除选中任务");
         //添加离线任务
         offLineAdd.setOnAction(e->{
-            OffLineAddView offLineAddView = new OffLineAddView(path, cookie,true);
-            Stage stages=new Stage();
             try {
-                offLineAddView.start(stages);
+                Stage stages=new Stage();
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/OffLineAddView.fxml"));
+                Parent root = loader.load();
+                stages.setScene(new Scene(root));
+                stages.setResizable(false);
+                stages.setTitle(path+"  "+fileServe.quota());
+                stages.show();
+
+                OffLineAddView offLineAddView = loader.getController();
+                offLineAddView.setCookie(cookie);
+                offLineAddView.setExistTable(true);
+                offLineAddView.setPath(path);
+
                 stages.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, windowEvent -> {
                     fileBeanObservableList.removeAll(fileBeanObservableList);
                     fileBeanObservableList.addAll(fileServe.getOffLine());
