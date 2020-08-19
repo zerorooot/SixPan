@@ -44,7 +44,6 @@ public class LoginView extends Application {
         if (Objects.nonNull(account) && Objects.nonNull(password)) {
             accountField.setText(account);
             passwordField.setText(password);
-
         }
     }
 
@@ -93,6 +92,17 @@ public class LoginView extends Application {
         primaryStage.setResizable(false);
         primaryStage.show();
 
+        String account = accountField.getText();
+        String password = passwordField.getText();
+        LoginServe loginServe = new LoginServe();
+        TokenBean tokenBean = loginServe.login(account, password);
+        String cookie = tokenBean.getCookie();
+        if (Objects.nonNull(cookie)) {
+            Stage stage = new Stage();
+            FileView fileView = new FileView(cookie);
+            fileView.start(stage);
+            primaryStage.close();
+        }
 
     }
 
