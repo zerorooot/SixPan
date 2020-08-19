@@ -5,7 +5,7 @@
 ## 使用
 
 ```bash
-git clone git@github.com:zerorooot/SixPan.git
+git clone https://github.com/zerorooot/SixPan.git
 cd SixPan
 mvn assembly:assembly
 java -jar target/SixPan-1.0-jar-with-dependencies.jar

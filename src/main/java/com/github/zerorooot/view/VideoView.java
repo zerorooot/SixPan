@@ -124,8 +124,6 @@ public class VideoView extends Application {
                     primaryStage.setWidth(Double.min(videoWidth, screenWidth));
                     primaryStage.setHeight(Double.min(videoHeight, screenHeight));
                 }
-
-
             }
         });
 
