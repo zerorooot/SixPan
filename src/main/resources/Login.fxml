@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="229.0" prefWidth="373.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.zerorooot.view.Login">
+    <Button fx:id="loginButton" layoutX="158.0" layoutY="169.0" mnemonicParsing="false" onMouseClicked="#login"
+            text="登录"/>
+    <Label layoutX="77.0" layoutY="70.0" text="账号"/>
+    <Label layoutX="78.0" layoutY="113.0" text="密码"/>
+    <TextField fx:id="accountField" layoutX="132.0" layoutY="66.0"/>
+    <PasswordField fx:id="passwordField" layoutX="132.0" layoutY="109.0"/>
+</AnchorPane>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<BorderPane maxHeight="Infinity" maxWidth="Infinity" minHeight="0" minWidth="0" prefHeight="450.0"
+            prefWidth="650.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+   <center>
+      <TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" fx:id="table">
+        <columns>
+          <TableColumn prefWidth="75.0" fx:id="checkBoxColumn"/>
+          <TableColumn prefWidth="75.0" text="文件名称" fx:id="fileNameColumn"/>
+            <TableColumn prefWidth="75.0" text="存储路径"  fx:id="savePathColumn"/>
+            <TableColumn prefWidth="75.0" text="下载进度" fx:id="progressColumn"/>
+            <TableColumn prefWidth="75.0" text="创建时间" fx:id="creatTimeColumn"/>
+        </columns>
+      </TableView>
+   </center>
+    <fx:define>
+        <ContextMenu fx:id="contextMenu">
+            <items>
+                <MenuItem onAction="#offLineAdd" text="添加离线任务"/>
+                <MenuItem onAction="#deleteComplete" text="删除完成任务" />
+                <MenuItem onAction="#flush" text="刷新离线列表" />
+                <MenuItem onAction="#deleteCurrent" text="删除选中任务" />
+            </items>
+        </ContextMenu>
+    </fx:define>
+</BorderPane>

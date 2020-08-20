@@ -6,15 +6,12 @@ package com.github.zerorooot;
  */
 
 
-import com.github.zerorooot.view.LoginView;
+import com.github.zerorooot.view.AutoLogin;
 import javafx.application.Application;
 
 
 public class AppMain {
     public static void main(String[] args) throws Exception {
-
-        Application.launch(LoginView.class, args);
-
-
+        Application.launch(AutoLogin.class, args);
     }
 }

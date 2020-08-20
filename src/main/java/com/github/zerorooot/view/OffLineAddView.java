@@ -3,12 +3,16 @@ package com.github.zerorooot.view;
 import com.github.zerorooot.serve.FileServe;
 import javafx.application.Application;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
 /**
  * @Author: zero
@@ -26,6 +30,7 @@ public class OffLineAddView extends Application {
     private String cookie ;
     private String path;
     private boolean existTable;
+    private Stage addOffLineStage;
 
 
 
@@ -33,6 +38,7 @@ public class OffLineAddView extends Application {
     public void start(Stage stage) {}
 
     @FXML
+    @SneakyThrows
     public void addUrl() {
         FileServe fileServe = new FileServe(cookie);
         if ("".equals(password.getText())) {
@@ -40,16 +46,19 @@ public class OffLineAddView extends Application {
         }
         fileServe.addOffLine(path, textArea.getText(), password.getText());
         if (!existTable) {
-            OffLineTableView offLineTableView = new OffLineTableView(path, cookie);
             Stage stages = new Stage();
-            try {
-                offLineTableView.start(stages);
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
+            OffLineTable offLineTable = new OffLineTable(path, cookie);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/OffLineTable.fxml"));
+            loader.setController(offLineTable);
+
+            Parent root = loader.load();
+            stages.setScene(new Scene(root));
+            stages.setTitle("离线下载列表");
+            stages.show();
         }
         Stage primaryStage = (Stage) addUrl.getScene().getWindow();
         primaryStage.close();
+        addOffLineStage = null;
 
     }
 }
