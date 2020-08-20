@@ -1,7 +1,6 @@
 package com.github.zerorooot.view;
 
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +17,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import lombok.NoArgsConstructor;
-
 
 
 /**
@@ -120,7 +118,7 @@ public class PictureView extends Application {
             if (keyEvent.getCode() == KeyCode.LEFT && currentIndex > 0) {
                 currentIndex = currentIndex - 1;
                 FileBean currentFileBean = pictureArrayList.get(currentIndex);
-                primaryStage.setTitle(currentFileBean.getName() + "  " + currentIndex + "/" + pictureArrayList.size());
+                primaryStage.setTitle(currentFileBean.getName() + "  " + (currentIndex - 1) + "/" + pictureArrayList.size());
                 String file1 = fileServe.download(currentFileBean);
 
                 Image image1 = new Image(file1);
@@ -130,15 +128,14 @@ public class PictureView extends Application {
             if (keyEvent.getCode() == KeyCode.RIGHT && currentIndex + 1 < pictureArrayList.size()) {
                 currentIndex = currentIndex + 1;
                 FileBean currentFileBean = pictureArrayList.get(currentIndex);
-                primaryStage.setTitle(currentFileBean.getName() + "  " + currentIndex + "/" + pictureArrayList.size());
+                primaryStage.setTitle(currentFileBean.getName() + "  " + (currentIndex + 1) + "/" + pictureArrayList.size());
                 String file1 = fileServe.download(currentFileBean);
                 Image image1 = new Image(file1);
                 imageView.setImage(image1);
-
             }
         });
 
-        primaryStage.setTitle(fileBean.getName() + "  " + currentIndex + "/" + pictureArrayList.size());
+        primaryStage.setTitle(fileBean.getName() + "  " + (currentIndex + 1) + "/" + pictureArrayList.size());
         primaryStage.setScene(scene);
         primaryStage.show();
     }
