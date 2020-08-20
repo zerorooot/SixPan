@@ -89,12 +89,9 @@ FileList--双击文件夹-->进入下一级
         │               └── view
         │                   ├── AutoLogin.java
         │                   ├── FileList.java
-        │                   ├── FileView.java(非fxml，已废弃)
         │                   ├── Login.java
-        │                   ├── LoginView.java(非fxml，已废弃)
         │                   ├── OffLineAddView.java
         │                   ├── OffLineTable.java
-        │                   ├── OffLineTableView.java(非fxml，已废弃)
         │                   ├── PictureView.java
         │                   └── VideoView.java
         └── resources
