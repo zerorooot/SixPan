@@ -118,7 +118,7 @@ public class PictureView extends Application {
             if (keyEvent.getCode() == KeyCode.LEFT && currentIndex > 0) {
                 currentIndex = currentIndex - 1;
                 FileBean currentFileBean = pictureArrayList.get(currentIndex);
-                primaryStage.setTitle(currentFileBean.getName() + "  " + (currentIndex - 1) + "/" + pictureArrayList.size());
+                primaryStage.setTitle(currentFileBean.getName() + "  " + (currentIndex + 1) + "/" + pictureArrayList.size());
                 String file1 = fileServe.download(currentFileBean);
 
                 Image image1 = new Image(file1);
