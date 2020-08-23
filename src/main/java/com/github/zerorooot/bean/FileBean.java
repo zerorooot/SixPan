@@ -24,6 +24,8 @@ public class FileBean implements Serializable {
     private long atime;
     private String dateTime;
     private String mime;
+
     private String parentPath;
     private TableCheckBox checkBox;
+    private String sizeString;
 }

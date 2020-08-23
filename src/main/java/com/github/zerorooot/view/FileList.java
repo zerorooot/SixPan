@@ -37,7 +37,7 @@ import java.util.ResourceBundle;
 public class FileList implements Initializable {
     public TableColumn<FileBean, CheckBox> checkBoxColumn;
     public TableColumn<FileBean, String> nameTableColumn;
-    public TableColumn<FileBean, Long> sizeTableColumn;
+    public TableColumn<FileBean, String> sizeTableColumn;
     public TableColumn<FileBean, String> createTimeColumn;
     public TableView<FileBean> table;
     public Label label;
@@ -74,7 +74,7 @@ public class FileList implements Initializable {
         nameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         nameTableColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         nameTableColumn.setEditable(true);
-        sizeTableColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
+        sizeTableColumn.setCellValueFactory(new PropertyValueFactory<>("sizeString"));
         createTimeColumn.setCellValueFactory(new PropertyValueFactory<>("dateTime"));
 
         //设置全选按钮

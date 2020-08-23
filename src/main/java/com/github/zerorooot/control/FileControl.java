@@ -11,6 +11,7 @@ import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.bean.TableCheckBox;
 import lombok.AllArgsConstructor;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -26,6 +27,7 @@ public class FileControl {
 
     /**
      * 获取所有文件
+     *
      * @param parentPath 文件路径
      * @return
      */
@@ -35,6 +37,7 @@ public class FileControl {
 
     /**
      * 获取文件目录
+     *
      * @param parentPath 文件路径
      * @return
      */
@@ -44,6 +47,7 @@ public class FileControl {
 
     /**
      * 获取文件名
+     *
      * @param parentPath 文件路径
      * @return
      */
@@ -53,8 +57,9 @@ public class FileControl {
 
     /**
      * 获取文件
+     *
      * @param parentPath 文件路径
-     * @param directory 是否是目录
+     * @param directory  是否是目录
      * @return
      */
     public ArrayList<FileBean> getFile(String parentPath, Boolean directory) {
@@ -81,9 +86,22 @@ public class FileControl {
             String path = fileBean.getPath();
             if (path.lastIndexOf("/") == 0) {
                 fileBean.setParentPath("/");
-            }else {
+            } else {
                 fileBean.setParentPath(path.substring(0, path.lastIndexOf("/")));
             }
+
+            long size = fileBean.getSize();
+            DecimalFormat df = new DecimalFormat("#.00");
+            if (size < 1024) {
+                fileBean.setSizeString(df.format((double) size) + "B");
+            } else if (size < 1048576) {
+                fileBean.setSizeString(df.format((double) size / 1024) + "KB");
+            } else if (size < 1073741824) {
+                fileBean.setSizeString(df.format((double) size / 1048576) + "MB");
+            } else {
+                fileBean.setSizeString(df.format((double) size / 1073741824) + "GB");
+            }
+
             fileBean.setCheckBox(new TableCheckBox());
 
             fileBeanLinkedList.add(fileBean);
@@ -93,6 +111,7 @@ public class FileControl {
 
     /**
      * 删除文件
+     *
      * @param fileBeanArrayList 要删除的list
      * @return
      */
@@ -111,8 +130,9 @@ public class FileControl {
 
     /**
      * 重命名文件
+     *
      * @param fileBean 要重命名的bean
-     * @param newName 新文件名
+     * @param newName  新文件名
      */
     public void rename(FileBean fileBean, String newName) {
         String url = ApiUrl.RENAME;
@@ -127,8 +147,9 @@ public class FileControl {
 
     /**
      * 移动文件
+     *
      * @param fileBeanArrayList 要移动的list
-     * @param newPath 移动的目录
+     * @param newPath           移动的目录
      * @return
      */
     public int move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
@@ -146,7 +167,8 @@ public class FileControl {
 
     /**
      * 创建新文件夹
-     * @param path 新文件夹的目录
+     *
+     * @param path       新文件夹的目录
      * @param folderName 新文件夹名
      */
     public void createFolder(String path, String folderName) {
@@ -161,10 +183,11 @@ public class FileControl {
 
     /**
      * 获取文件下载url
+     *
      * @param identity 文件识别号
      * @return
      */
-    public String download(String  identity) {
+    public String download(String identity) {
         String url = ApiUrl.DOWNLOAD;
         JSONObject jsonObject = new JSONObject();
         jsonObject.set("identity", identity);
@@ -178,6 +201,7 @@ public class FileControl {
 
     /**
      * 查看当前离线下载的配额
+     *
      * @return
      */
     public String quota() {
@@ -193,6 +217,7 @@ public class FileControl {
 
     /**
      * 离线下载百度网盘文件
+     *
      * @param textLink 离线下载的url
      * @param password 离线下载的密码
      * @return
@@ -208,7 +233,7 @@ public class FileControl {
         }
         post.body(jsonObject.toString());
         JSONObject returnJson = new JSONObject(post.execute().body());
-        if (Objects.nonNull(returnJson.getStr("success"))&&!returnJson.getBool("success")) {
+        if (Objects.nonNull(returnJson.getStr("success")) && !returnJson.getBool("success")) {
             throw new RuntimeException(returnJson.toString());
         }
         return returnJson.getStr("hash");
@@ -216,6 +241,7 @@ public class FileControl {
 
     /**
      * 离线下载文件
+     *
      * @param json 文件的url
      * @return
      */
@@ -229,6 +255,7 @@ public class FileControl {
 
     /**
      * 获取离线下载列表
+     *
      * @return
      */
     public ArrayList<OffLineBean> getOffLine() {
@@ -256,6 +283,7 @@ public class FileControl {
 
     /**
      * 把离线已完成的文件从离线列表中移除(不删除文件)
+     *
      * @return
      */
     public int deleteComplete() {
@@ -272,6 +300,7 @@ public class FileControl {
 
     /**
      * 删除某离线文件
+     *
      * @param offLineBeanArrayList 要删除的list
      * @return
      */
@@ -291,6 +320,7 @@ public class FileControl {
 
     /**
      * 搜索文件
+     *
      * @param fileName 文件名
      * @return
      */
@@ -313,7 +343,7 @@ public class FileControl {
             String path = fileBean.getPath();
             if (path.lastIndexOf("/") == 0) {
                 fileBean.setParentPath("/");
-            }else {
+            } else {
                 fileBean.setParentPath(path.substring(0, path.lastIndexOf("/")));
             }
             fileBean.setCheckBox(new TableCheckBox());
