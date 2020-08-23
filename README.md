@@ -23,6 +23,7 @@ java -jar target/SixPan-1.0-jar-with-dependencies.jar
 6. 图片浏览
 7. 视频浏览(需要安装vlc)
 8. 增查删改移文件(右键弹出)
+9. 获取文件下载地址
 
 流程
 
@@ -39,6 +40,7 @@ FileList--右键-->flushItem(刷新文件)
 FileList--右键-->deleteItem(删除文件)
 FileList--右键-->addOffLineItem(离线下载)
 FileList--右键-->offLineViewltem(离线列表)
+FileList--右键-->downloadItem(下载地址)
 offLineViewltem--右键-->offLineAdd(添加离线任务)
 offLineViewltem--右键-->deleteComplete(删除已完成任务)
 offLineViewltem--右键-->flush(刷新)
@@ -64,40 +66,44 @@ FileList--双击文件夹-->进入下一级
 .
 ├── LICENSE
 ├── README.md
+├── SixPan.iml
 ├── pom.xml
 └── src
-    └── main
-        ├── java
-        │   └── com
-        │       └── github
-        │           └── zerorooot
-        │               ├── AppMain.java
-        │               ├── bean
-        │               │   ├── ApiUrl.java
-        │               │   ├── FileBean.java
-        │               │   ├── OffLineBean.java
-        │               │   ├── TableCheckBox.java
-        │               │   └── TokenBean.java
-        │               ├── control
-        │               │   ├── FileControl.java
-        │               │   └── LoginControl.java
-        │               ├── serve
-        │               │   ├── FileServe.java
-        │               │   └── LoginServe.java
-        │               ├── util
-        │               │   └── PropertiesUtil.java
-        │               └── view
-        │                   ├── AutoLogin.java
-        │                   ├── FileList.java
-        │                   ├── Login.java
-        │                   ├── OffLineAddView.java
-        │                   ├── OffLineTable.java
-        │                   ├── PictureView.java
-        │                   └── VideoView.java
-        └── resources
-            ├── FileList.fxml
-            ├── Login.fxml
-            ├── OffLineAddView.fxml
-            └── OffLineTable.fxml
+    ├── main
+    │   ├── java
+    │   │   └── com
+    │   │       └── github
+    │   │           └── zerorooot
+    │   │               ├── AppMain.java
+    │   │               ├── bean
+    │   │               │   ├── ApiUrl.java
+    │   │               │   ├── FileBean.java
+    │   │               │   ├── OffLineBean.java
+    │   │               │   ├── TableCheckBox.java
+    │   │               │   └── TokenBean.java
+    │   │               ├── control
+    │   │               │   ├── FileControl.java
+    │   │               │   └── LoginControl.java
+    │   │               ├── serve
+    │   │               │   ├── FileServe.java
+    │   │               │   └── LoginServe.java
+    │   │               ├── util
+    │   │               │   ├── ClipBoardUtil.java
+    │   │               │   └── PropertiesUtil.java
+    │   │               └── view
+    │   │                   ├── AutoLogin.java
+    │   │                   ├── FileList.java
+    │   │                   ├── Login.java
+    │   │                   ├── OffLineAddView.java
+    │   │                   ├── OffLineTable.java
+    │   │                   ├── PictureView.java
+    │   │                   └── VideoView.java
+    │   └── resources
+    │       ├── FileList.fxml
+    │       ├── Login.fxml
+    │       ├── OffLineAddView.fxml
+    │       └── OffLineTable.fxml
+    └── test
+        └── java
 ```
 

@@ -29,6 +29,7 @@
                 <MenuItem onAction="#getDeleteItem" text="删除文件" />
                 <MenuItem onAction="#getAddOffLineItem" text="离线下载" />
                 <MenuItem onAction="#getOffLineltem" text="离线列表" />
+                <MenuItem onAction="#getDownloadItem" text="下载文件"/>
             </items>
         </ContextMenu>
     </fx:define>

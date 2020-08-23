@@ -3,6 +3,7 @@ package com.github.zerorooot.view;
 import com.github.zerorooot.bean.FileBean;
 import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.serve.FileServe;
+import com.github.zerorooot.util.ClipBoardUtil;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -382,6 +383,34 @@ public class FileList implements Initializable {
 
     }
 
+    /**
+     * 将下载链接输出到系统剪贴板
+     * @param actionEvent
+     */
+    public void getDownloadItem(ActionEvent actionEvent) {
+        ArrayList<FileBean> fileBeanArrayList = getSelectFileBeanArrayList();
+        String download = fileServe.download(fileBeanArrayList);
+        ClipBoardUtil.setClipboardString(download);
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("下载链接获取成功");
+        alert.setHeaderText(null);
+        alert.setContentText("下载链接已粘贴到系统剪贴板，3秒后自动关闭\n(注：无法下载文件夹)");
+        alert.show();
+
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(2000);
+                if (alert.isShowing()) {
+                    Platform.runLater(alert::close);
+                }
+            } catch (Exception exp) {
+                exp.printStackTrace();
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
 
     /**
      * 进入下一级，返回上一级，

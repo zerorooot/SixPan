@@ -22,15 +22,17 @@ public class FileServe {
 
     /**
      * 获取所有文件
+     *
      * @param parentPath 路径
      * @return
      */
-    public ArrayList<FileBean> getFileAll(String parentPath)  {
+    public ArrayList<FileBean> getFileAll(String parentPath) {
         return fileControl.getFileAll(parentPath);
     }
 
     /**
      * 获取文件夹
+     *
      * @param parentPath 路径
      * @return
      */
@@ -40,6 +42,7 @@ public class FileServe {
 
     /**
      * 获取非文件夹
+     *
      * @param parentPath 路径
      * @return
      */
@@ -49,6 +52,7 @@ public class FileServe {
 
     /**
      * 删除文件
+     *
      * @param fileBeanArrayList 要删除的list
      * @return
      */
@@ -58,8 +62,9 @@ public class FileServe {
 
     /**
      * 重命名文件
+     *
      * @param fileBean 要重命名的bean
-     * @param newName 新名字
+     * @param newName  新名字
      */
     public void rename(FileBean fileBean, String newName) {
         fileControl.rename(fileBean, newName);
@@ -67,8 +72,9 @@ public class FileServe {
 
     /**
      * 移动文件
+     *
      * @param fileBeanArrayList 要移动的list
-     * @param newPath 新目录
+     * @param newPath           新目录
      * @return
      */
     public int move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
@@ -77,7 +83,8 @@ public class FileServe {
 
     /**
      * 创建文件夹
-     * @param path 要创建的路径
+     *
+     * @param path       要创建的路径
      * @param folderName 文件夹名称
      */
     public void createFolder(String path, String folderName) {
@@ -86,6 +93,7 @@ public class FileServe {
 
     /**
      * 获取下载地址
+     *
      * @param fileBean bean
      * @return
      */
@@ -94,7 +102,24 @@ public class FileServe {
     }
 
     /**
+     * 获取一堆文件的下载地址
+     *
+     * @param fileBeanArrayList list
+     * @return 下载地址
+     */
+    public String download(ArrayList<FileBean> fileBeanArrayList) {
+        StringBuffer stringBuffer = new StringBuffer();
+        fileBeanArrayList.forEach(s -> {
+            stringBuffer.append(fileControl.download(s.getIdentity()));
+            stringBuffer.append("\n");
+        });
+        return "\n".equals(stringBuffer.toString()) ? null : stringBuffer.toString();
+
+    }
+
+    /**
      * 获取下载地址
+     *
      * @param offLineBean offlinebean
      * @return
      */
@@ -104,8 +129,9 @@ public class FileServe {
 
     /**
      * 添加离线下载
-     * @param path 要离线下载的路径
-     * @param text 下载的url
+     *
+     * @param path     要离线下载的路径
+     * @param text     下载的url
      * @param password 下载的密码
      * @return
      */
@@ -126,6 +152,7 @@ public class FileServe {
 
     /**
      * 获取离线下载列表
+     *
      * @return
      */
     public ArrayList<OffLineBean> getOffLine() {
@@ -134,6 +161,7 @@ public class FileServe {
 
     /**
      * 获取离线下载的配额
+     *
      * @return
      */
     public String quota() {
@@ -142,6 +170,7 @@ public class FileServe {
 
     /**
      * 把离线已完成的文件从离线列表中移除(不删除文件)
+     *
      * @return
      */
     public int deleteComplete() {
@@ -150,6 +179,7 @@ public class FileServe {
 
     /**
      * 删除某离线文件
+     *
      * @param offLineBeanArrayList
      * @return
      */
@@ -159,6 +189,7 @@ public class FileServe {
 
     /**
      * 搜索文件
+     *
      * @param name 文件名
      * @return
      */
