@@ -34,6 +34,8 @@ public class AutoLogin extends Application {
             }else {
                 login(primaryStage);
             }
+        }else {
+            login(primaryStage);
         }
     }
 
