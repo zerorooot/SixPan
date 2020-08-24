@@ -335,7 +335,8 @@ public class FileControl {
         JSONObject jsonObject = new JSONObject();
         jsonObject.set("limit", -1);
         jsonObject.set("name", fileName);
-        jsonObject.set("parentIdentity", "::all");
+        jsonObject.set("parentIdentity", "");
+        jsonObject.set("search", true);
         HttpRequest post = HttpUtil.createPost(url);
         post.header("cookie", cookie);
         post.body(jsonObject.toString());

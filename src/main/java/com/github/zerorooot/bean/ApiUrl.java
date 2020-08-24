@@ -5,13 +5,13 @@ package com.github.zerorooot.bean;
  * @Date: 2020/8/7 19:51
  */
 public class ApiUrl {
-    public static final String DELETE = "https://api.6pan.cn/v3/file/trash";
-    public static final String LIST = "https://api.6pan.cn/v3/files/list";
+    public static final String DELETE = "https://api.6pan.cn/v3/newfile/trash";
+    public static final String LIST = "https://api.6pan.cn/v3/newfile/list";
     public static final String RENAME = "https://api.6pan.cn/v3/file/rename";
     public static final String LOGIN = "https://account.6pan.cn/v3/oauth/login";
     public static final String CHECKCOOKIE = "https://account.6pan.cn/v3/oauth/checkCookie?appid=bc088aa5e2ad&destination=https:%2F%2Fv3-beta.6pan.cn%2Ffiles%2Fall%2F";
    public static final String MOVE = "https://api.6pan.cn/v3/file/move";
-    public static final String CREATEFOLDER = "https://api.6pan.cn/v3/file";
+    public static final String CREATEFOLDER = "https://api.6pan.cn/v3/newfile";
     public static final String DOWNLOAD = "https://api.6pan.cn/v3/file/download";
     public static final String QUOTA = "https://api.6pan.cn/v3/offline/quota";
     public static final String PARSE = "https://api.6pan.cn/v3/offline/parse";
