@@ -10,6 +10,7 @@ import com.github.zerorooot.bean.FileBean;
 import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.bean.TableCheckBox;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -187,6 +188,7 @@ public class FileControl {
      * @param identity 文件识别号
      * @return
      */
+    @SneakyThrows
     public String download(String identity) {
         String url = ApiUrl.DOWNLOAD;
         JSONObject jsonObject = new JSONObject();
@@ -196,6 +198,10 @@ public class FileControl {
         post.body(jsonObject.toString());
 
         JSONObject returnJson = new JSONObject(post.execute().body());
+        while (returnJson.getStr("success") != null) {
+            Thread.sleep(100);
+            returnJson = new JSONObject(post.execute().body());
+        }
         return returnJson.getStr("downloadAddress");
     }
 
