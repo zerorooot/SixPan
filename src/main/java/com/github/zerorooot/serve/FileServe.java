@@ -110,8 +110,10 @@ public class FileServe {
     public String download(ArrayList<FileBean> fileBeanArrayList) {
         StringBuffer stringBuffer = new StringBuffer();
         fileBeanArrayList.forEach(s -> {
-            stringBuffer.append(fileControl.download(s.getIdentity()));
-            stringBuffer.append("\n");
+            if (!s.isDirectory()) {
+                stringBuffer.append(fileControl.download(s.getIdentity()));
+                stringBuffer.append("\n");
+            }
         });
         return "\n".equals(stringBuffer.toString()) ? null : stringBuffer.toString();
 

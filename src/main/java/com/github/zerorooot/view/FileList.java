@@ -352,6 +352,7 @@ public class FileList implements Initializable {
 
         offLineTable.table.setOnMouseClicked(event -> {
             OffLineBean selectedItem = offLineTable.table.getSelectionModel().getSelectedItem();
+            offLineTable.contextMenu.hide();
             if (event.getClickCount() == 2) {
                 //进入FistList文件夹
                 if (selectedItem.isDirectory()) {
@@ -429,6 +430,7 @@ public class FileList implements Initializable {
         if (e.getButton() == MouseButton.FORWARD) {
             tableClick(e, 1);
         }
+        contextMenu.hide();
     }
 
     /**

@@ -2,6 +2,7 @@ package com.github.zerorooot.view;
 
 import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.serve.FileServe;
+import com.github.zerorooot.util.ClipBoardUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.NoArgsConstructor;
@@ -18,6 +20,7 @@ import lombok.NoArgsConstructor;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -156,5 +159,34 @@ public class OffLineTable implements Initializable {
         table.getItems().removeAll(deleteOffLineBeanArrayList);
     }
 
+    /**
+     * 获取任务详情
+     * @param actionEvent
+     */
+    public void detail(ActionEvent actionEvent) {
+        OffLineBean selectedItem = table.getSelectionModel().getSelectedItem();
+        if (Objects.nonNull(selectedItem)) {
+            Dialog<String> dialog = new Dialog<>();
+            dialog.setTitle("任务详情");
+            ButtonType copyButtonType = new ButtonType("复制到剪贴板", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(copyButtonType, ButtonType.CANCEL);
+            Label label = new Label("任务信息");
+            label.setMaxWidth(Double.MAX_VALUE);
+            TextArea textArea = new TextArea(selectedItem.getTextLink());
+            BorderPane borderPane = new BorderPane();
+            borderPane.setTop(label);
+            borderPane.setCenter(textArea);
+            dialog.getDialogPane().setContent(borderPane);
+
+            dialog.setResultConverter(dialogButton -> {
+                if (dialogButton == copyButtonType) {
+                    return textArea.getText();
+                }
+                return null;
+            });
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(ClipBoardUtil::setClipboardString);
+        }
+    }
 
 }

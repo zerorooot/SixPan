@@ -10,10 +10,10 @@ import javafx.scene.control.CheckBox;
  * @Date: 2020/8/10 22:16
  */
 public class TableCheckBox {
-    CheckBox checkbox=new CheckBox();
-    public ObservableValue<CheckBox> getCheckBox()
-    {
-        return new  ObservableValue<CheckBox>() {
+    CheckBox checkbox = new CheckBox();
+
+    public ObservableValue<CheckBox> getCheckBox() {
+        return new ObservableValue<CheckBox>() {
             @Override
             public void addListener(ChangeListener<? super CheckBox> listener) {
 
@@ -40,6 +40,7 @@ public class TableCheckBox {
             }
         };
     }
+
     public Boolean isSelected() {
         return checkbox.isSelected();
     }

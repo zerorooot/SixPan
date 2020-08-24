@@ -24,6 +24,7 @@
                 <MenuItem onAction="#deleteComplete" text="删除完成任务" />
                 <MenuItem onAction="#flush" text="刷新离线列表" />
                 <MenuItem onAction="#deleteCurrent" text="删除选中任务" />
+                <MenuItem onAction="#detail" text="查看任务详情"/>
             </items>
         </ContextMenu>
     </fx:define>
