@@ -8,8 +8,6 @@ import cn.hutool.json.JSONObject;
 import com.github.zerorooot.bean.ApiUrl;
 import com.github.zerorooot.bean.TokenBean;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @Author: zero
@@ -22,11 +20,11 @@ public class LoginControl {
 
     public TokenBean login() {
         TokenBean tokenBean = new TokenBean(account, password, null);
-        tokenBean.setCookie(getCookie());
+        tokenBean.setToken(getToken());
         return tokenBean;
     }
 
-    private String getCookie() {
+    private String getToken() {
         String url = ApiUrl.LOGIN;
         String md5Password = SecureUtil.md5(password);
         JSONObject jsonObject = new JSONObject();
@@ -49,7 +47,14 @@ public class LoginControl {
             HttpRequest oauthLogin = HttpUtil.createGet(oauthLoginUrl);
             HttpResponse oauthLoginResponse = oauthLogin.execute();
             String c = oauthLoginResponse.headerList("set-cookie").toString().replace("[", "").replace("]", "");
-            return c;
+            String token = null;
+            for (String s : c.split(";")) {
+                if (s.contains("token=")) {
+                    token = s.split("token=")[1];
+                }
+            }
+            token = "Bearer " + token;
+            return token;
         }
         // {"message":"Login Failed","reference":"LOGIN_FAILED","success":false,"status":401}
         return null;

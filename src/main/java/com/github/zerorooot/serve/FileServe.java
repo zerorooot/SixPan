@@ -16,8 +16,8 @@ import java.util.ArrayList;
 public class FileServe {
     private final FileControl fileControl;
 
-    public FileServe(String cookie) {
-        fileControl = new FileControl(cookie);
+    public FileServe(String token) {
+        fileControl = new FileControl(token);
     }
 
     /**

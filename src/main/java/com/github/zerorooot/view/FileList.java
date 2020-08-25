@@ -43,24 +43,24 @@ public class FileList implements Initializable {
     public TableView<FileBean> table;
     public Label label;
     public ContextMenu contextMenu;
-    private String cookie;
+    private String token;
     private FileServe fileServe;
     private final ObservableList<FileBean> fileBeanObservableList = FXCollections.observableArrayList();
     private boolean existOffLineTable;
     private int currentSelectionRow;
     private Stage offLineTableStage;
 
-    public void setCookie(String cookie) {
-        this.cookie = cookie;
+    public void setToken(String token) {
+        this.token = token;
     }
 
-    public FileList(String cookie) {
-        this.cookie = cookie;
+    public FileList(String token) {
+        this.token = token;
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        fileServe = new FileServe(cookie);
+        fileServe = new FileServe(token);
 
         //设置column大小
         table.setColumnResizePolicy(resizeFeatures -> {
@@ -317,7 +317,7 @@ public class FileList implements Initializable {
 
 
         OffLineAddView offLineAddView = loader.getController();
-        offLineAddView.setCookie(cookie);
+        offLineAddView.setToken(token);
         offLineAddView.setExistTable(existOffLineTable);
         offLineAddView.setPath(label.getText());
 
@@ -332,7 +332,7 @@ public class FileList implements Initializable {
     public void getOffLineltem(ActionEvent actionEvent) {
         existOffLineTable = true;
 
-        OffLineTable offLineTable = new OffLineTable(label.getText(), cookie);
+        OffLineTable offLineTable = new OffLineTable(label.getText(), token);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/OffLineTable.fxml"));
         loader.setController(offLineTable);
         Parent root = loader.load();
@@ -468,7 +468,7 @@ public class FileList implements Initializable {
                     if (fileBean.getMime().contains("image")) {
                         //图片浏览
                         Stage stage1 = new Stage();
-                        PictureView pictureView = new PictureView(fileBean, cookie);
+                        PictureView pictureView = new PictureView(fileBean, token);
                         pictureView.start(stage1);
                     }
                     //视频浏览

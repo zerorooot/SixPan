@@ -104,7 +104,7 @@ public class OffLineTable implements Initializable {
             stages.show();
 
             OffLineAddView offLineAddView = loader.getController();
-            offLineAddView.setCookie(cookie);
+            offLineAddView.setToken(cookie);
             offLineAddView.setExistTable(true);
             offLineAddView.setPath(path);
 

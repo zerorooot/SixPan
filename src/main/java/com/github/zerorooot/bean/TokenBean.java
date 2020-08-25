@@ -16,5 +16,5 @@ import lombok.Setter;
 public class TokenBean {
     private String account;
     private String password;
-    private String cookie;
+    private String token;
 }

@@ -27,7 +27,7 @@ public class OffLineAddView extends Application {
     public TextField password;
     @FXML
     public Button addUrl;
-    private String cookie ;
+    private String token;
     private String path;
     private boolean existTable;
     private Stage addOffLineStage;
@@ -40,14 +40,14 @@ public class OffLineAddView extends Application {
     @FXML
     @SneakyThrows
     public void addUrl() {
-        FileServe fileServe = new FileServe(cookie);
+        FileServe fileServe = new FileServe(token);
         if ("".equals(password.getText())) {
             fileServe.addOffLine(path, textArea.getText().replaceAll(" ", ""), null);
         }
         fileServe.addOffLine(path, textArea.getText(), password.getText());
         if (!existTable) {
             Stage stages = new Stage();
-            OffLineTable offLineTable = new OffLineTable(path, cookie);
+            OffLineTable offLineTable = new OffLineTable(path, token);
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/OffLineTable.fxml"));
             loader.setController(offLineTable);
 

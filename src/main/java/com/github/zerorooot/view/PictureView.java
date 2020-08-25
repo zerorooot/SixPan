@@ -27,17 +27,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PictureView extends Application {
     private FileBean fileBean;
-    private String cookie;
+    private String token;
     private int currentIndex = 0;
 
-    public PictureView(FileBean fileBean, String cookie) {
+    public PictureView(FileBean fileBean, String token) {
         this.fileBean = fileBean;
-        this.cookie = cookie;
+        this.token = token;
     }
 
     public void start(Stage primaryStage) {
         ImageView imageView = new ImageView();
-        FileServe fileServe = new FileServe(cookie);
+        FileServe fileServe = new FileServe(token);
         String file = fileServe.download(fileBean);
 
         List<FileBean> pictureArrayList =

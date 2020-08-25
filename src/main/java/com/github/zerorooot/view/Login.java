@@ -34,15 +34,15 @@ public class Login implements Initializable {
         String password = passwordField.getText();
         LoginServe loginServe = new LoginServe();
         TokenBean tokenBean = loginServe.login(account, password);
-        String cookie = tokenBean.getCookie();
-        if (Objects.nonNull(cookie)) {
+        String token = tokenBean.getToken();
+        if (Objects.nonNull(token)) {
             Properties properties = PropertiesUtil.getProperties();
             properties.setProperty("account", account);
             properties.setProperty("password", password);
             PropertiesUtil.setProperties(properties);
 
             Stage stages = new Stage();
-            FileList fileList = new FileList(cookie);
+            FileList fileList = new FileList(token);
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/FileList.fxml"));
             loader.setController(fileList);
 

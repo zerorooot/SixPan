@@ -1,6 +1,5 @@
 package com.github.zerorooot.view;
 
-import com.github.zerorooot.AppMain;
 import com.github.zerorooot.bean.TokenBean;
 import com.github.zerorooot.serve.LoginServe;
 import com.github.zerorooot.util.PropertiesUtil;
@@ -28,7 +27,7 @@ public class AutoLogin extends Application {
         if (Objects.nonNull(account) && Objects.nonNull(password)) {
             LoginServe loginServe = new LoginServe();
             TokenBean tokenBean = loginServe.login(account, password);
-            String cookie = tokenBean.getCookie();
+            String cookie = tokenBean.getToken();
             if (Objects.nonNull(cookie)) {
                 fileList(primaryStage, cookie);
             }else {

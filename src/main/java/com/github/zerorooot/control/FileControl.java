@@ -22,7 +22,7 @@ import java.util.Objects;
  */
 @AllArgsConstructor
 public class FileControl {
-    private final String cookie;
+    private final String token;
 
     //{"directory":true,"parentPath":"/新建文件夹","limit":-1}
 
@@ -73,7 +73,7 @@ public class FileControl {
         }
 
         HttpRequest post = HttpUtil.createPost(url);
-        post.header("cookie", cookie);
+        post.header("authorization", token);
 
         post.body(bodyJson.toString());
         JSONObject object = new JSONObject(post.execute().body());
@@ -119,7 +119,7 @@ public class FileControl {
     public int delete(ArrayList<FileBean> fileBeanArrayList) {
         String url = ApiUrl.DELETE;
         HttpRequest post = HttpUtil.createPost(url);
-        post.header("cookie", cookie);
+        post.header("authorization", token);
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         fileBeanArrayList.forEach(s -> jsonArray.add(s.getIdentity()));
@@ -141,7 +141,7 @@ public class FileControl {
         jsonObject.set("identity", fileBean.getIdentity());
         jsonObject.set("name", newName);
         HttpRequest post = HttpUtil.createPost(url);
-        post.header("cookie", cookie);
+        post.header("authorization", token);
         post.body(jsonObject.toString());
         post.executeAsync();
     }
@@ -161,7 +161,7 @@ public class FileControl {
         jsonObject.set("sourceIdentity", jsonArray);
         jsonObject.set("path", newPath);
         HttpRequest post = HttpUtil.createPost(url);
-        post.header("cookie", cookie);
+        post.header("authorization", token);
         JSONObject returnJson = new JSONObject(post.body(jsonObject.toString()).execute().body());
         return returnJson.getInt("successCount");
     }
@@ -178,7 +178,7 @@ public class FileControl {
         jsonObject.set("path", path);
         jsonObject.set("name", folderName);
         HttpRequest post = HttpUtil.createPost(url);
-        post.header("cookie", cookie);
+        post.header("authorization", token);
         post.body(jsonObject.toString()).executeAsync();
     }
 
@@ -194,7 +194,7 @@ public class FileControl {
         JSONObject jsonObject = new JSONObject();
         jsonObject.set("identity", identity);
         HttpRequest post = HttpUtil.createPost(url);
-        post.header("cookie", cookie);
+        post.header("authorization", token);
         post.body(jsonObject.toString());
 
         JSONObject returnJson = new JSONObject(post.execute().body());
@@ -215,7 +215,7 @@ public class FileControl {
         JSONObject jsonObject = new JSONObject();
         jsonObject.set("time", System.currentTimeMillis());
         HttpRequest post = HttpUtil.createPost(url);
-        post.header("cookie", cookie);
+        post.header("authorization", token);
         post.body(jsonObject.toString());
         JSONObject returnJson = new JSONObject(post.execute().body());
         return returnJson.getStr("available") + "/" + returnJson.getStr("dailyQuota");
@@ -232,7 +232,7 @@ public class FileControl {
         String url = ApiUrl.PARSE;
         JSONObject jsonObject = new JSONObject();
         HttpRequest post = HttpUtil.createPost(url);
-        post.header("cookie", cookie);
+        post.header("authorization", token);
         jsonObject.set("textLink", textLink);
         if (Objects.nonNull(password)) {
             jsonObject.set("password", password);
@@ -254,7 +254,7 @@ public class FileControl {
     public int addOffLine(String json) {
         String url = ApiUrl.ADDOFFLINE;
         HttpRequest post = HttpUtil.createPost(url);
-        post.header("cookie", cookie);
+        post.header("authorization", token);
         JSONObject returnJson = new JSONObject(post.body(json).execute().body());
         return returnJson.getInt("successCount");
     }
@@ -267,7 +267,7 @@ public class FileControl {
     public ArrayList<OffLineBean> getOffLine() {
         String url = ApiUrl.OFFLINELIST;
         HttpRequest post = HttpUtil.createPost(url);
-        post.header("cookie", cookie);
+        post.header("authorization", token);
         JSONObject jsonObject = new JSONObject();
         jsonObject.set("limit", -1);
         jsonObject.set("start", 0);
@@ -295,7 +295,7 @@ public class FileControl {
     public int deleteComplete() {
         String url = ApiUrl.DELETECOMPLETE;
         HttpRequest post = HttpUtil.createPost(url);
-        post.header("cookie", cookie);
+        post.header("authorization", token);
         JSONObject jsonObject = new JSONObject();
         jsonObject.set("type", 1000);
         jsonObject.set("deleteFile", false);
@@ -313,7 +313,7 @@ public class FileControl {
     public int offLineDelete(ArrayList<OffLineBean> offLineBeanArrayList) {
         String url = ApiUrl.OFFLINEDELETE;
         HttpRequest post = HttpUtil.createPost(url);
-        post.header("cookie", cookie);
+        post.header("authorization", token);
         JSONArray jsonArray = new JSONArray();
         offLineBeanArrayList.forEach(s -> jsonArray.add(s.getTaskIdentity()));
         JSONObject jsonObject = new JSONObject();
@@ -338,7 +338,7 @@ public class FileControl {
         jsonObject.set("parentIdentity", "");
         jsonObject.set("search", true);
         HttpRequest post = HttpUtil.createPost(url);
-        post.header("cookie", cookie);
+        post.header("authorization", token);
         post.body(jsonObject.toString());
         JSONArray returnJson = new JSONObject(post.execute().body()).getJSONArray("dataList");
         ArrayList<FileBean> fileBeanArrayList = new ArrayList<>();
