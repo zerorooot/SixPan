@@ -116,7 +116,7 @@ public class FileControl {
      * @param fileBeanArrayList 要删除的list
      * @return
      */
-    public int delete(ArrayList<FileBean> fileBeanArrayList) {
+    public void delete(ArrayList<FileBean> fileBeanArrayList) {
         String url = ApiUrl.DELETE;
         HttpRequest post = HttpUtil.createPost(url);
         post.header("authorization", token);
@@ -124,8 +124,8 @@ public class FileControl {
         JSONArray jsonArray = new JSONArray();
         fileBeanArrayList.forEach(s -> jsonArray.add(s.getIdentity()));
         jsonObject.set("sourceIdentity", jsonArray);
-        JSONObject returnJson = new JSONObject(post.body(jsonObject.toString()).execute().body());
-        return returnJson.getInt("successCount");
+        post.body(jsonObject.toString());
+        post.executeAsync();
 
     }
 
@@ -153,7 +153,7 @@ public class FileControl {
      * @param newPath           移动的目录
      * @return
      */
-    public int move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
+    public void move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
         String url = ApiUrl.MOVE;
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
@@ -162,8 +162,8 @@ public class FileControl {
         jsonObject.set("path", newPath);
         HttpRequest post = HttpUtil.createPost(url);
         post.header("authorization", token);
-        JSONObject returnJson = new JSONObject(post.body(jsonObject.toString()).execute().body());
-        return returnJson.getInt("successCount");
+        post.body(jsonObject.toString());
+        post.executeAsync();
     }
 
     /**
@@ -251,12 +251,12 @@ public class FileControl {
      * @param json 文件的url
      * @return
      */
-    public int addOffLine(String json) {
+    public void addOffLine(String json) {
         String url = ApiUrl.ADDOFFLINE;
         HttpRequest post = HttpUtil.createPost(url);
         post.header("authorization", token);
-        JSONObject returnJson = new JSONObject(post.body(json).execute().body());
-        return returnJson.getInt("successCount");
+        post.body(json);
+        post.executeAsync();
     }
 
     /**
@@ -292,7 +292,7 @@ public class FileControl {
      *
      * @return
      */
-    public int deleteComplete() {
+    public void deleteComplete() {
         String url = ApiUrl.DELETECOMPLETE;
         HttpRequest post = HttpUtil.createPost(url);
         post.header("authorization", token);
@@ -300,8 +300,7 @@ public class FileControl {
         jsonObject.set("type", 1000);
         jsonObject.set("deleteFile", false);
         post.body(jsonObject.toString());
-        JSONObject returnJson = new JSONObject(post.execute().body());
-        return returnJson.getInt("successCount");
+        post.executeAsync();
     }
 
     /**
@@ -310,7 +309,7 @@ public class FileControl {
      * @param offLineBeanArrayList 要删除的list
      * @return
      */
-    public int offLineDelete(ArrayList<OffLineBean> offLineBeanArrayList) {
+    public void offLineDelete(ArrayList<OffLineBean> offLineBeanArrayList) {
         String url = ApiUrl.OFFLINEDELETE;
         HttpRequest post = HttpUtil.createPost(url);
         post.header("authorization", token);
@@ -320,8 +319,7 @@ public class FileControl {
         jsonObject.set("taskIdentity", jsonArray);
         jsonObject.set("deleteFile", true);
         post.body(jsonObject.toString());
-        JSONObject returnJson = new JSONObject(post.execute().body());
-        return returnJson.getInt("successCount");
+        post.executeAsync();
     }
 
     /**

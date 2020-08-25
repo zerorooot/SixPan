@@ -7,6 +7,8 @@ import com.github.zerorooot.util.ClipBoardUtil;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -341,7 +343,7 @@ public class FileList implements Initializable {
             offLineTableStage.setScene(new Scene(root));
             offLineTableStage.setTitle("离线下载列表");
             offLineTableStage.show();
-        }else {
+        } else {
             offLineTableStage.requestFocus();
         }
 
@@ -386,31 +388,57 @@ public class FileList implements Initializable {
 
     /**
      * 将下载链接输出到系统剪贴板
+     *
      * @param actionEvent
      */
     public void getDownloadItem(ActionEvent actionEvent) {
         ArrayList<FileBean> fileBeanArrayList = getSelectFileBeanArrayList();
-        String download = fileServe.download(fileBeanArrayList);
-        ClipBoardUtil.setClipboardString(download);
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("下载链接获取成功");
-        alert.setHeaderText(null);
-        alert.setContentText("下载链接已粘贴到系统剪贴板，3秒后自动关闭\n(注：无法下载文件夹)");
-        alert.show();
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("获取下载链接");
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
+        Label label = new Label("获取下载链接中。。。");
+        label.setMaxWidth(Double.MAX_VALUE);
+        ProgressBar progressBar = new ProgressBar(0);
+        progressBar.setMaxWidth(Double.MAX_VALUE);
 
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(2000);
-                if (alert.isShowing()) {
-                    Platform.runLater(alert::close);
-                }
-            } catch (Exception exp) {
-                exp.printStackTrace();
+        BorderPane borderPane = new BorderPane();
+        borderPane.setTop(label);
+        borderPane.setCenter(progressBar);
+        dialog.getDialogPane().setContent(borderPane);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        Service<Integer> service = new Service<>() {
+            @Override
+            protected Task<Integer> createTask() {
+                return new Task<>() {
+                    @Override
+                    protected Integer call() {
+                        for (int i = 0; i < fileBeanArrayList.size(); i++) {
+                            String download = fileServe.download(fileBeanArrayList.get(i));
+                            stringBuilder.append(download);
+                            stringBuilder.append("\n");
+                            System.out.println(i);
+                            updateProgress(i + 1, fileBeanArrayList.size());
+                        }
+                        Platform.runLater(dialog::close);
+                        ClipBoardUtil.setClipboardString(stringBuilder.toString());
+                        return null;
+                    }
+                };
             }
+        };
+        service.start();
+        progressBar.progressProperty().bind(service.progressProperty());
+        dialog.show();
+        //取消服务
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == ButtonType.CANCEL) {
+                service.cancel();
+            }
+            return null;
         });
-        thread.setDaemon(true);
-        thread.start();
+
     }
 
     /**

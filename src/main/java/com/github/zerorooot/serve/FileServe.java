@@ -56,8 +56,8 @@ public class FileServe {
      * @param fileBeanArrayList 要删除的list
      * @return
      */
-    public int delete(ArrayList<FileBean> fileBeanArrayList) {
-        return fileControl.delete(fileBeanArrayList);
+    public void delete(ArrayList<FileBean> fileBeanArrayList) {
+         fileControl.delete(fileBeanArrayList);
     }
 
     /**
@@ -77,8 +77,8 @@ public class FileServe {
      * @param newPath           新目录
      * @return
      */
-    public int move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
-        return fileControl.move(fileBeanArrayList, newPath);
+    public void move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
+         fileControl.move(fileBeanArrayList, newPath);
     }
 
     /**
@@ -101,23 +101,6 @@ public class FileServe {
         return fileControl.download(fileBean.getIdentity());
     }
 
-    /**
-     * 获取一堆文件的下载地址
-     *
-     * @param fileBeanArrayList list
-     * @return 下载地址
-     */
-    public String download(ArrayList<FileBean> fileBeanArrayList) {
-        StringBuffer stringBuffer = new StringBuffer();
-        fileBeanArrayList.forEach(s -> {
-            if (!s.isDirectory()) {
-                stringBuffer.append(fileControl.download(s.getIdentity()));
-                stringBuffer.append("\n");
-            }
-        });
-        return "\n".equals(stringBuffer.toString()) ? null : stringBuffer.toString();
-
-    }
 
     /**
      * 获取下载地址
@@ -137,7 +120,7 @@ public class FileServe {
      * @param password 下载的密码
      * @return
      */
-    public int addOffLine(String path, String text, String password) {
+    public void addOffLine(String path, String text, String password) {
         String[] split = text.split("\n");
         JSONArray jsonArray = new JSONArray();
         for (String s : split) {
@@ -149,7 +132,7 @@ public class FileServe {
         jsonObject.set("task", jsonArray);
         jsonObject.set("savePath", path);
 
-        return fileControl.addOffLine(jsonObject.toString());
+         fileControl.addOffLine(jsonObject.toString());
     }
 
     /**
@@ -175,8 +158,8 @@ public class FileServe {
      *
      * @return
      */
-    public int deleteComplete() {
-        return fileControl.deleteComplete();
+    public void deleteComplete() {
+         fileControl.deleteComplete();
     }
 
     /**
@@ -185,8 +168,8 @@ public class FileServe {
      * @param offLineBeanArrayList
      * @return
      */
-    public int offLineDelete(ArrayList<OffLineBean> offLineBeanArrayList) {
-        return fileControl.offLineDelete(offLineBeanArrayList);
+    public void offLineDelete(ArrayList<OffLineBean> offLineBeanArrayList) {
+        fileControl.offLineDelete(offLineBeanArrayList);
     }
 
     /**

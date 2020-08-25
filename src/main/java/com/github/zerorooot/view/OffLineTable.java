@@ -38,24 +38,24 @@ public class OffLineTable implements Initializable {
     public ContextMenu contextMenu;
     private final ObservableList<OffLineBean> fileBeanObservableList = FXCollections.observableArrayList();
     private FileServe fileServe;
-    private String cookie;
+    private String token;
     private String path;
 
-    public OffLineTable(String cookie, String path) {
-        this.cookie = cookie;
+    public OffLineTable(String path, String token) {
+        this.token = token;
         this.path = path;
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        fileServe = new FileServe(cookie);
+        fileServe = new FileServe(token);
 
 
         //设置全选按钮
-        checkBoxColumn.setCellValueFactory(cellData ->cellData.getValue().getCheckBox().getCheckBox());
+        checkBoxColumn.setCellValueFactory(cellData -> cellData.getValue().getCheckBox().getCheckBox());
         Label checkBoxColumnLable = new Label("多选");
-        checkBoxColumnLable.setOnMouseClicked(e->{
-            table.getItems().forEach(s->{
+        checkBoxColumnLable.setOnMouseClicked(e -> {
+            table.getItems().forEach(s -> {
                 s.getCheckBox().setSelect(!s.getCheckBox().isSelected());
             });
         });
@@ -78,7 +78,7 @@ public class OffLineTable implements Initializable {
 
         //设置大小
         table.setColumnResizePolicy(resizeFeatures -> {
-            checkBoxColumn.setPrefWidth(table.widthProperty().get()*0.07);
+            checkBoxColumn.setPrefWidth(table.widthProperty().get() * 0.07);
             fileNameColumn.setPrefWidth(table.widthProperty().get() * 0.6);
             savePathColumn.setPrefWidth(table.widthProperty().get() * 0.1);
             progressColumn.setPrefWidth(table.widthProperty().get() * 0.1);
@@ -90,21 +90,22 @@ public class OffLineTable implements Initializable {
 
     /**
      * 添加离线任务
+     *
      * @param actionEvent
      */
     public void offLineAdd(ActionEvent actionEvent) {
         try {
-            Stage stages=new Stage();
+            Stage stages = new Stage();
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/OffLineAddView.fxml"));
             Parent root = loader.load();
             stages.setScene(new Scene(root));
             stages.setResizable(false);
-            stages.setTitle(path+"  "+fileServe.quota());
+            stages.setTitle(path + "  " + fileServe.quota());
             stages.show();
 
             OffLineAddView offLineAddView = loader.getController();
-            offLineAddView.setToken(cookie);
+            offLineAddView.setToken(token);
             offLineAddView.setExistTable(true);
             offLineAddView.setPath(path);
 
@@ -120,6 +121,7 @@ public class OffLineTable implements Initializable {
 
     /**
      * 删除完成任务
+     *
      * @param actionEvent
      */
     public void deleteComplete(ActionEvent actionEvent) {
@@ -131,6 +133,7 @@ public class OffLineTable implements Initializable {
 
     /**
      * 刷新离线列表
+     *
      * @param actionEvent
      */
     public void flush(ActionEvent actionEvent) {
@@ -141,11 +144,12 @@ public class OffLineTable implements Initializable {
 
     /**
      * 删除选中任务
+     *
      * @param actionEvent
      */
     public void deleteCurrent(ActionEvent actionEvent) {
         ArrayList<OffLineBean> deleteOffLineBeanArrayList = new ArrayList<>();
-        table.getItems().forEach(s->{
+        table.getItems().forEach(s -> {
             if (s.getCheckBox().isSelected()) {
                 deleteOffLineBeanArrayList.add(s);
             }
@@ -161,6 +165,7 @@ public class OffLineTable implements Initializable {
 
     /**
      * 获取任务详情
+     *
      * @param actionEvent
      */
     public void detail(ActionEvent actionEvent) {
