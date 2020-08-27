@@ -7,16 +7,19 @@ import java.util.stream.Collectors;
 import com.github.zerorooot.bean.FileBean;
 import com.github.zerorooot.serve.FileServe;
 import javafx.application.Application;
-import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
+import javafx.application.Platform;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 
 /**
@@ -28,7 +31,9 @@ import lombok.NoArgsConstructor;
 public class PictureView extends Application {
     private FileBean fileBean;
     private String token;
+
     private int currentIndex = 0;
+    private Service<Integer> service;
 
     public PictureView(FileBean fileBean, String token) {
         this.fileBean = fileBean;
@@ -38,7 +43,58 @@ public class PictureView extends Application {
     public void start(Stage primaryStage) {
         ImageView imageView = new ImageView();
         FileServe fileServe = new FileServe(token);
-        String file = fileServe.download(fileBean);
+
+        StackPane stackPane = new StackPane();
+        stackPane.setAlignment(Pos.CENTER);
+        Scene scene = new Scene(stackPane, 700, 500);
+        ProgressIndicator progressIndicator = new ProgressIndicator();
+        primaryStage.setScene(scene);
+
+        service = new Service<>() {
+            @Override
+            protected Task<Integer> createTask() {
+                return new Task<>() {
+                    @SneakyThrows
+                    @Override
+                    protected Integer call() {
+                        Platform.runLater(() -> {
+                            stackPane.getChildren().removeAll(stackPane.getChildren());
+                            stackPane.getChildren().add(progressIndicator);
+                        });
+
+                        Image image = new Image(fileServe.download(fileBean));
+                        imageView.setImage(image);
+                        double w = image.getWidth();
+                        double h = image.getHeight();
+                        final double max = Math.max(w, h);
+                        int width = (int) (500 * w / max);
+                        final int height = (int) (500 * h / max);
+                        imageView.setFitHeight(height);
+                        imageView.setFitWidth(width);
+                        imageView.setCache(true);
+                        imageView.setPreserveRatio(true);
+
+                        Platform.runLater(() -> {
+                            stackPane.getChildren().removeAll(stackPane.getChildren());
+                            stackPane.getChildren().add(imageView);
+                        });
+
+                        return null;
+                    }
+                };
+            }
+        };
+
+        primaryStage.show();
+        service.start();
+
+        stackPane.heightProperty().addListener((observable, oldValue, newValue) -> {
+            imageView.setY((newValue.doubleValue() - imageView.getFitHeight()) / 2);
+        });
+
+        stackPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+            imageView.setX((newValue.doubleValue() - imageView.getFitWidth()) / 2);
+        });
 
         List<FileBean> pictureArrayList =
                 fileServe.getNonDirectory(fileBean.getParentPath()).stream().filter(e -> e.getMime().contains("image")).collect(Collectors.toList());
@@ -50,94 +106,28 @@ public class PictureView extends Application {
             }
         }
 
-        Image image = new Image(file);
-        imageView.setImage(image);
-
-
-        final double w = image.getWidth();
-        final double h = image.getHeight();
-        final double max = Math.max(w, h);
-        final int width = (int) (500 * w / max);
-        final int height = (int) (500 * h / max);
-        imageView.setFitHeight(height);
-        imageView.setFitWidth(width);
-        imageView.setCache(true);
-
-        Pane pane = new Pane();
-        StackPane stackPane = new StackPane(pane);
-
-        Scene scene = new Scene(stackPane, 700, 500);
-        pane.getChildren().add(imageView);
-
-        pane.heightProperty().addListener((observable, oldValue, newValue) -> {
-            imageView.setY((newValue.doubleValue() - imageView.getFitHeight()) / 2);
-        });
-
-        pane.widthProperty().addListener((observable, oldValue, newValue) -> {
-            imageView.setX((newValue.doubleValue() - imageView.getFitWidth()) / 2);
-        });
-
-
-        final double scale = 5;
-        stackPane.addEventFilter(ScrollEvent.SCROLL, event -> {
-            double rate;
-            if (event.getDeltaY() > 0) {
-                rate = 0.05;
-            } else {
-                rate = -0.05;
-            }
-            double newWidth = imageView.getFitWidth() + w * rate;
-            double newHeight = imageView.getFitHeight() + h * rate;
-            if (newWidth <= width || newWidth > scale * width) {
-                return;
-            }
-            Point2D eventPoint = new Point2D(event.getSceneX(), event.getSceneY());
-            Point2D imagePoint = pane.localToScene(new Point2D(imageView.getX(), imageView.getY()));
-            Rectangle2D imageRect = new Rectangle2D(imagePoint.getX(), imagePoint.getY(), imageView.getFitWidth(), imageView.getFitHeight());
-            Point2D ratePoint;
-            Point2D eventPointDistance;
-            if (newWidth > scale / 4 * width && imageRect.contains(eventPoint)) {
-                ratePoint = eventPoint.subtract(imagePoint);
-                ratePoint = new Point2D(ratePoint.getX() / imageView.getFitWidth(), ratePoint.getY() / imageView.getFitHeight());
-                eventPointDistance = pane.sceneToLocal(eventPoint);
-            } else {
-                ratePoint = new Point2D(0.5, 0.5);
-                eventPointDistance = new Point2D(pane.getWidth() / 2,
-                        pane.getHeight() / 2);
-            }
-
-            imageView.setX(eventPointDistance.getX() - newWidth * ratePoint.getX());
-            imageView.setY(eventPointDistance.getY() - newHeight * ratePoint.getY());
-            imageView.setFitWidth(newWidth);
-            imageView.setFitHeight(newHeight);
-        });
-
-
         scene.setOnKeyPressed(keyEvent -> {
             //上一张
             if (keyEvent.getCode() == KeyCode.LEFT && currentIndex > 0) {
                 currentIndex = currentIndex - 1;
                 FileBean currentFileBean = pictureArrayList.get(currentIndex);
                 primaryStage.setTitle(currentFileBean.getName() + "  " + (currentIndex + 1) + "/" + pictureArrayList.size());
-                String file1 = fileServe.download(currentFileBean);
 
-                Image image1 = new Image(file1);
-                imageView.setImage(image1);
+                this.fileBean = currentFileBean;
+                service.restart();
             }
             //下一张
             if (keyEvent.getCode() == KeyCode.RIGHT && currentIndex + 1 < pictureArrayList.size()) {
                 currentIndex = currentIndex + 1;
                 FileBean currentFileBean = pictureArrayList.get(currentIndex);
                 primaryStage.setTitle(currentFileBean.getName() + "  " + (currentIndex + 1) + "/" + pictureArrayList.size());
-                String file1 = fileServe.download(currentFileBean);
-                Image image1 = new Image(file1);
-                imageView.setImage(image1);
+
+                this.fileBean = currentFileBean;
+                service.restart();
             }
         });
 
         primaryStage.setTitle(fileBean.getName() + "  " + (currentIndex + 1) + "/" + pictureArrayList.size());
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
 
+    }
 }
