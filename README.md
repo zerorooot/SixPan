@@ -23,7 +23,7 @@ java -jar target/SixPan-1.0-jar-with-dependencies.jar
 6. 图片浏览
 7. 视频浏览(需要安装vlc)
 8. 增查删改移文件(右键弹出)
-9. 获取文件下载地址
+9. 获取文件下载地址(输出至系统剪贴板)
 
 流程
 

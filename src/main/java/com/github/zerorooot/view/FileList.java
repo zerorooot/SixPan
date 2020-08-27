@@ -418,7 +418,6 @@ public class FileList implements Initializable {
                             String download = fileServe.download(fileBeanArrayList.get(i));
                             stringBuilder.append(download);
                             stringBuilder.append("\n");
-                            System.out.println(i);
                             updateProgress(i + 1, fileBeanArrayList.size());
                         }
                         Platform.runLater(dialog::close);
