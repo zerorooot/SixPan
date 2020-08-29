@@ -7,6 +7,7 @@ package com.github.zerorooot.view;
 
 import cn.hutool.core.date.DateUtil;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
@@ -16,6 +17,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.media.*;
+import uk.co.caprica.vlcj.player.base.MediaPlayer;
+import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 
@@ -71,9 +74,19 @@ public class VideoView extends Application {
         });
         progressBar.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
+        embeddedMediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+            @Override
+            public void timeChanged(MediaPlayer mediaPlayer, long newTime) {
+                progressBar.setProgress(embeddedMediaPlayer.status().position());
+                Platform.runLater(() -> {
+                    primaryStage.setTitle(name + "    " + secondToTime(embeddedMediaPlayer.status().time() / 1000) + "/" + secondToTime(embeddedMediaPlayer.status().length() / 1000));
+                });
+            }
+        });
         root.setBottom(progressBar);
 
         embeddedMediaPlayer.media().play(url);
+
 
         scene.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.RIGHT) {
