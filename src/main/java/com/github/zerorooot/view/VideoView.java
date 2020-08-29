@@ -5,6 +5,7 @@ package com.github.zerorooot.view;
  * @Date: 2020/8/6 19:29
  */
 
+import cn.hutool.core.date.DateUtil;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressBar;
@@ -18,14 +19,16 @@ import uk.co.caprica.vlcj.media.*;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 
+import java.util.Date;
+
 import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactory.videoSurfaceForImageView;
 
 
 public class VideoView extends Application {
     protected final MediaPlayerFactory mediaPlayerFactory;
     protected final EmbeddedMediaPlayer embeddedMediaPlayer;
-    private String url;
-    private String name;
+    private final String url;
+    private final String name;
 
 
     public VideoView(String url, String name) {
@@ -42,7 +45,7 @@ public class VideoView extends Application {
         double screenWidth = 1294;
         double screenHeight = 797;
         BorderPane root = new BorderPane();
-        Scene scene = new Scene(root,1280,755,  Color.BLACK);
+        Scene scene = new Scene(root, 1280, 755, Color.BLACK);
         ProgressBar progressBar = new ProgressBar(0);
         ImageView videoImageView = new ImageView();
         videoImageView.setPreserveRatio(true);
@@ -64,6 +67,7 @@ public class VideoView extends Application {
             double progressPercent = x / progressBar.getWidth();
             embeddedMediaPlayer.controls().setPosition((float) progressPercent);
             progressBar.setProgress(progressPercent);
+            primaryStage.setTitle(name + "    " + secondToTime(embeddedMediaPlayer.status().time() / 1000) + "/" + secondToTime(embeddedMediaPlayer.status().length() / 1000));
         });
         progressBar.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
@@ -73,11 +77,11 @@ public class VideoView extends Application {
 
         scene.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.RIGHT) {
-                primaryStage.setTitle(name + "  " + embeddedMediaPlayer.status().position());
+                primaryStage.setTitle(name + "    " + secondToTime(embeddedMediaPlayer.status().time() / 1000) + "/" + secondToTime(embeddedMediaPlayer.status().length() / 1000));
                 embeddedMediaPlayer.controls().skipTime(15000);
             }
             if (keyEvent.getCode() == KeyCode.LEFT) {
-                primaryStage.setTitle(name + "  " + embeddedMediaPlayer.status().position());
+                primaryStage.setTitle(name + "    " + secondToTime(embeddedMediaPlayer.status().time() / 1000) + "/" + secondToTime(embeddedMediaPlayer.status().length() / 1000));
                 embeddedMediaPlayer.controls().skipTime(-15000);
             }
             if (keyEvent.getCode() == KeyCode.UP) {
@@ -133,4 +137,26 @@ public class VideoView extends Application {
 
     }
 
+    /**
+     * 秒转成正常时间
+     *
+     * @param mss
+     * @return
+     */
+    private String secondToTime(long mss) {
+        String hours = (mss % (60 * 60 * 24)) / (60 * 60) + "";
+        String minutes = (mss % (60 * 60)) / 60 + "";
+        String seconds = mss % 60 + "";
+        if (hours.length() == 1) {
+            hours = "0" + hours;
+        }
+        if (minutes.length() == 1) {
+            minutes = "0" + minutes;
+        }
+        if (seconds.length() == 1) {
+            seconds = "0" + seconds;
+        }
+        return hours + ":" + minutes + ":" + seconds;
+
+    }
 }

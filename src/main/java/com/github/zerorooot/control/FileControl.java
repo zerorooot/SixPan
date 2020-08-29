@@ -1,6 +1,7 @@
 package com.github.zerorooot.control;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.unit.DataSizeUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
@@ -92,16 +93,7 @@ public class FileControl {
             }
 
             long size = fileBean.getSize();
-            DecimalFormat df = new DecimalFormat("#.00");
-            if (size < 1024) {
-                fileBean.setSizeString(df.format((double) size) + "B");
-            } else if (size < 1048576) {
-                fileBean.setSizeString(df.format((double) size / 1024) + "KB");
-            } else if (size < 1073741824) {
-                fileBean.setSizeString(df.format((double) size / 1048576) + "MB");
-            } else {
-                fileBean.setSizeString(df.format((double) size / 1073741824) + "GB");
-            }
+            fileBean.setSizeString(DataSizeUtil.format(size));
 
             fileBean.setCheckBox(new TableCheckBox());
 
