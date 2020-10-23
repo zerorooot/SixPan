@@ -33,9 +33,9 @@ public class OffLineAddView extends Application {
     private Stage addOffLineStage;
 
 
-
     @Override
-    public void start(Stage stage) {}
+    public void start(Stage stage) {
+    }
 
     @FXML
     @SneakyThrows
@@ -43,8 +43,10 @@ public class OffLineAddView extends Application {
         FileServe fileServe = new FileServe(token);
         if ("".equals(password.getText())) {
             fileServe.addOffLine(path, textArea.getText().replaceAll(" ", ""), null);
+        } else {
+            fileServe.addOffLine(path, textArea.getText(), password.getText());
         }
-        fileServe.addOffLine(path, textArea.getText(), password.getText());
+        
         if (!existTable) {
             Stage stages = new Stage();
             OffLineTable offLineTable = new OffLineTable(path, token);

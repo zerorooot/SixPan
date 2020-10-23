@@ -1,5 +1,6 @@
 package com.github.zerorooot.view;
 
+import cn.hutool.core.io.unit.DataSizeUtil;
 import com.github.zerorooot.bean.FileBean;
 import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.serve.FileServe;
@@ -27,10 +28,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * @Author: zero
@@ -77,8 +75,21 @@ public class FileList implements Initializable {
         nameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         nameTableColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         nameTableColumn.setEditable(true);
-        sizeTableColumn.setCellValueFactory(new PropertyValueFactory<>("sizeString"));
+        //创建时间
         createTimeColumn.setCellValueFactory(new PropertyValueFactory<>("dateTime"));
+        //文件大小
+        sizeTableColumn.setCellValueFactory(new PropertyValueFactory<>("sizeString"));
+        //比较文件大小，方便排序
+        sizeTableColumn.setComparator((o1, o2) -> {
+            try {
+                long o1Long = DataSizeUtil.parse(o1.replace(" ", ""));
+                long o2Long = DataSizeUtil.parse(o2.replace(" ", ""));
+                return o1Long > o2Long ? 0 : 1;
+            } catch (Exception e) {
+                System.err.println(o1 + "           " + o2);
+            }
+            return 0;
+        });
 
         //设置全选按钮
         Label checkBoxColumnLable = new Label("全选");
@@ -295,9 +306,11 @@ public class FileList implements Initializable {
      */
     public void getDeleteItem(ActionEvent actionEvent) {
         ArrayList<FileBean> deleteFileBeanArrayList = getSelectFileBeanArrayList();
-
-        fileServe.delete(deleteFileBeanArrayList);
-        table.getItems().removeAll(deleteFileBeanArrayList);
+        //防止删除时卡顿
+        Platform.runLater(()->{
+            fileServe.delete(deleteFileBeanArrayList);
+            table.getItems().removeAll(deleteFileBeanArrayList);
+        });
     }
 
     /**
