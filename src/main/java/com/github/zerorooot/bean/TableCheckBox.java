@@ -13,7 +13,7 @@ public class TableCheckBox {
     CheckBox checkbox = new CheckBox();
 
     public ObservableValue<CheckBox> getCheckBox() {
-        return new ObservableValue<CheckBox>() {
+        return new ObservableValue<>() {
             @Override
             public void addListener(ChangeListener<? super CheckBox> listener) {
 

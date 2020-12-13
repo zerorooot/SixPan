@@ -307,7 +307,7 @@ public class FileList implements Initializable {
     public void getDeleteItem(ActionEvent actionEvent) {
         ArrayList<FileBean> deleteFileBeanArrayList = getSelectFileBeanArrayList();
         //防止删除时卡顿
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             fileServe.delete(deleteFileBeanArrayList);
             table.getItems().removeAll(deleteFileBeanArrayList);
         });
@@ -383,14 +383,7 @@ public class FileList implements Initializable {
                     //视频浏览
                     if (selectedItem.getFileMime().contains("video")) {
                         String download = fileServe.download(selectedItem);
-                        VideoView videoView = new VideoView(download, selectedItem.getName());
-                        Stage stage1 = new Stage();
-                        videoView.start(stage1);
-                        stage1.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, b -> {
-                            videoView.embeddedMediaPlayer.controls().stop();
-                            videoView.embeddedMediaPlayer.release();
-                            videoView.mediaPlayerFactory.release();
-                        });
+                        openVideoView(download, selectedItem.getName());
                     }
                 }
 
@@ -459,22 +452,25 @@ public class FileList implements Initializable {
      * @param e
      */
     public void tableMouseEvent(MouseEvent e) {
+        //左键,进入下一级、打开视频、打开图片
         if (e.getButton() == MouseButton.PRIMARY) {
             tableClick(e, 2);
+            contextMenu.hide();
         }
         //上一级
         if (e.getButton() == MouseButton.BACK) {
             back(e);
         }
-        //前进
+        //前进键，进入下一级、打开视频、打开图片
         if (e.getButton() == MouseButton.FORWARD) {
             tableClick(e, 1);
         }
-        contextMenu.hide();
+
     }
 
     /**
      * table 按钮事件
+     * F2重命名
      *
      * @param e
      */
@@ -507,25 +503,55 @@ public class FileList implements Initializable {
                 } else {
                     if (fileBean.getMime().contains("image")) {
                         //图片浏览
-                        Stage stage1 = new Stage();
-                        PictureView pictureView = new PictureView(fileBean, token);
-                        pictureView.start(stage1);
+                        openPictureView(fileBean, token);
                     }
                     //视频浏览
                     if (fileBean.getMime().contains("video")) {
-                        Stage stage1 = new Stage();
-                        String downloadUrl = fileServe.download(fileBean);
-                        VideoView videoView = new VideoView(downloadUrl, fileBean.getName());
-                        videoView.start(stage1);
-                        stage1.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, b -> {
-                            videoView.embeddedMediaPlayer.controls().stop();
-                            videoView.embeddedMediaPlayer.release();
-                            videoView.mediaPlayerFactory.release();
-                        });
+                        openVideoView(fileBean);
                     }
                 }
             }
         }
+    }
+
+
+    /**
+     * 打开显示图片窗口
+     *
+     * @param fileBean 文件
+     * @param token    token
+     */
+    private void openPictureView(FileBean fileBean, String token) {
+        Stage stage1 = new Stage();
+        PictureView pictureView = new PictureView(fileBean, token);
+        pictureView.start(stage1);
+    }
+
+    /**
+     * 打开显示视频窗口
+     *
+     * @param fileBean 文件
+     */
+    private void openVideoView(FileBean fileBean) {
+        String downloadUrl = fileServe.download(fileBean);
+        openVideoView(downloadUrl, fileBean.getName());
+    }
+
+    /**
+     * 打开显示视频窗口
+     *
+     * @param downloadUrl 视频网址
+     * @param videoName   显示的名字
+     */
+    private void openVideoView(String downloadUrl, String videoName) {
+        Stage stage1 = new Stage();
+        VideoView videoView = new VideoView(downloadUrl, videoName);
+        videoView.start(stage1);
+        stage1.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, b -> {
+            videoView.embeddedMediaPlayer.controls().stop();
+            videoView.embeddedMediaPlayer.release();
+            videoView.mediaPlayerFactory.release();
+        });
     }
 
     /**

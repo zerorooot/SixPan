@@ -9,7 +9,7 @@ public class ApiUrl {
     public static final String LIST = "https://api.2dland.cn/v3/newfile/list";
     public static final String RENAME = "https://api.2dland.cn/v3/file/rename";
     public static final String LOGIN = "https://account.2dland.cn/v3/oauth/login";
-    public static final String CHECKCOOKIE = "https://account.2dland.cn/v3/oauth/checkCookie?appid=bc088aa5e2ad&destination=https:%2F%2Fv3-beta.2dland.cn%2Ffiles%2Fall%2F";
+    public static final String CHECKCOOKIE = "https://account.2dland.cn/v3/oauth/checkCookie?appid=bc088aa5e2ad&destination=https:%2F%2F2dland.cn%2Ffiles%2Fall%2F%252Fok";
     public static final String MOVE = "https://api.2dland.cn/v3/file/move";
     public static final String CREATEFOLDER = "https://api.2dland.cn/v3/newfile";
     public static final String DOWNLOAD = "https://api.2dland.cn/v3/newfile/download";

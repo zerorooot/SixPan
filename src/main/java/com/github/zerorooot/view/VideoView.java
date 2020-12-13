@@ -5,7 +5,7 @@ package com.github.zerorooot.view;
  * @Date: 2020/8/6 19:29
  */
 
-import cn.hutool.core.date.DateUtil;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -20,10 +20,6 @@ import uk.co.caprica.vlcj.media.*;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
-
-
-import java.util.Date;
-
 import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactory.videoSurfaceForImageView;
 
 
@@ -39,7 +35,6 @@ public class VideoView extends Application {
         this.embeddedMediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
         this.url = url;
         this.name = name;
-
     }
 
 
@@ -64,8 +59,7 @@ public class VideoView extends Application {
             }
         });
 
-        progressBar.setOnMouseClicked(ev ->
-        {
+        progressBar.setOnMouseClicked(ev -> {
             double x = ev.getX();
             double progressPercent = x / progressBar.getWidth();
             embeddedMediaPlayer.controls().setPosition((float) progressPercent);

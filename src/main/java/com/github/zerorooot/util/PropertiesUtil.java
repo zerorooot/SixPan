@@ -9,11 +9,11 @@ import java.util.Properties;
  * @Date: 2020/8/6 10:26
  */
 public class PropertiesUtil {
-
     public static Properties getProperties() throws IOException {
         String location =
                 new File(PropertiesUtil.class.getProtectionDomain().getCodeSource().getLocation().getFile()).getParentFile().toString();
         String path = location + File.separator + "init.properties";
+
         File file = new File(path);
         if (!file.exists()) {
             file.createNewFile();
