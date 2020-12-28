@@ -54,11 +54,22 @@ public class FileServe {
      * 删除文件
      *
      * @param fileBeanArrayList 要删除的list
-     * @return
      */
     public void delete(ArrayList<FileBean> fileBeanArrayList) {
          fileControl.delete(fileBeanArrayList);
     }
+
+    /**
+     * 删除文件
+     *
+     * @param fileBean 要删除的fileBean
+     */
+    public void delete(FileBean fileBean) {
+        ArrayList<FileBean> fileBeans = new ArrayList<>();
+        fileBeans.add(fileBean);
+        fileControl.delete(fileBeans);
+    }
+
 
     /**
      * 重命名文件
@@ -75,7 +86,6 @@ public class FileServe {
      *
      * @param fileBeanArrayList 要移动的list
      * @param newPath           新目录
-     * @return
      */
     public void move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
          fileControl.move(fileBeanArrayList, newPath);
@@ -95,7 +105,7 @@ public class FileServe {
      * 获取下载地址
      *
      * @param fileBean bean
-     * @return
+     * @return download url
      */
     public String download(FileBean fileBean) {
         return fileControl.download(fileBean.getIdentity());
@@ -105,8 +115,8 @@ public class FileServe {
     /**
      * 获取下载地址
      *
-     * @param offLineBean offlinebean
-     * @return
+     * @param offLineBean offLineBean
+     * @return download url
      */
     public String download(OffLineBean offLineBean) {
         return fileControl.download(offLineBean.getAccessIdentity());
@@ -118,7 +128,6 @@ public class FileServe {
      * @param path     要离线下载的路径
      * @param text     下载的url
      * @param password 下载的密码
-     * @return
      */
     public void addOffLine(String path, String text, String password) {
         String[] split = text.split("\n");
@@ -165,18 +174,26 @@ public class FileServe {
     /**
      * 删除某离线文件
      *
-     * @param offLineBeanArrayList
-     * @return
+     * @param offLineBeanArrayList offLineBeanArrayList
      */
     public void offLineDelete(ArrayList<OffLineBean> offLineBeanArrayList) {
         fileControl.offLineDelete(offLineBeanArrayList);
     }
 
     /**
+     * 删除某离线文件
+     * @param offLineBean  offLineBean
+     */
+    public void offLineDelete(OffLineBean offLineBean) {
+        ArrayList<OffLineBean> offLineBeans = new ArrayList<>();
+        offLineBeans.add(offLineBean);
+        fileControl.offLineDelete(offLineBeans);
+    }
+    /**
      * 搜索文件
      *
      * @param name 文件名
-     * @return
+     * @return file list
      */
     public ArrayList<FileBean> searchFile(String name) {
         return fileControl.searchFile(name);

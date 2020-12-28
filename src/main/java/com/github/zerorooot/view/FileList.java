@@ -382,8 +382,7 @@ public class FileList implements Initializable {
                 if (!selectedItem.isDirectory()) {
                     //视频浏览
                     if (selectedItem.getFileMime().contains("video")) {
-                        String download = fileServe.download(selectedItem);
-                        openVideoView(download, selectedItem.getName());
+                        openVideoView(selectedItem);
                     }
                 }
 
@@ -504,11 +503,15 @@ public class FileList implements Initializable {
                     if (fileBean.getMime().contains("image")) {
                         //图片浏览
                         openPictureView(fileBean, token);
+                        return;
                     }
                     //视频浏览
                     if (fileBean.getMime().contains("video")) {
                         openVideoView(fileBean);
+                        return;
                     }
+                    //都不是就显示文件信息
+                    getFileInfoItem(new ActionEvent());
                 }
             }
         }
@@ -533,19 +536,26 @@ public class FileList implements Initializable {
      * @param fileBean 文件
      */
     private void openVideoView(FileBean fileBean) {
-        String downloadUrl = fileServe.download(fileBean);
-        openVideoView(downloadUrl, fileBean.getName());
+        VideoView videoView = new VideoView(fileBean, fileServe);
+        openVideoView(videoView);
     }
 
     /**
      * 打开显示视频窗口
      *
-     * @param downloadUrl 视频网址
-     * @param videoName   显示的名字
+     * @param offLineBean 文件
      */
-    private void openVideoView(String downloadUrl, String videoName) {
+    private void openVideoView(OffLineBean offLineBean) {
+        VideoView videoView = new VideoView(offLineBean, fileServe);
+        openVideoView(videoView);
+    }
+
+    /**
+     * play video
+     * @param videoView {@link VideoView}
+     */
+    private void openVideoView(VideoView videoView) {
         Stage stage1 = new Stage();
-        VideoView videoView = new VideoView(downloadUrl, videoName);
         videoView.start(stage1);
         stage1.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, b -> {
             videoView.embeddedMediaPlayer.controls().stop();
@@ -557,7 +567,7 @@ public class FileList implements Initializable {
     /**
      * 获取table选中的项目
      *
-     * @return
+     * @return all select item
      */
     private ArrayList<FileBean> getSelectFileBeanArrayList() {
         ArrayList<FileBean> selectFileBeanArrayList = new ArrayList<>();

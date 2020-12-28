@@ -51,7 +51,7 @@ public class FileControl {
      * 获取文件名
      *
      * @param parentPath 文件路径
-     * @return
+     * @return file name
      */
     public ArrayList<FileBean> getNonDirectory(String parentPath) {
         return getFile(parentPath, false);
@@ -82,15 +82,7 @@ public class FileControl {
         ArrayList<FileBean> fileBeanLinkedList = new ArrayList<>();
 
         for (int i = 0; i < dataList.size(); i++) {
-            JSONObject jsonObject = dataList.getJSONObject(i);
-            FileBean fileBean = jsonObject.toBean(FileBean.class);
-            fileBean.setDateTime(DateUtil.date(fileBean.getAtime()).toString());
-            String path = fileBean.getPath();
-            if (path.lastIndexOf("/") == 0) {
-                fileBean.setParentPath("/");
-            } else {
-                fileBean.setParentPath(path.substring(0, path.lastIndexOf("/")));
-            }
+            FileBean fileBean = setTimeAndPath(dataList, i);
 
             long size = fileBean.getSize();
             fileBean.setSizeString(DataSizeUtil.format(size));
@@ -106,7 +98,6 @@ public class FileControl {
      * 删除文件
      *
      * @param fileBeanArrayList 要删除的list
-     * @return
      */
     public void delete(ArrayList<FileBean> fileBeanArrayList) {
         String url = ApiUrl.DELETE;
@@ -143,7 +134,6 @@ public class FileControl {
      *
      * @param fileBeanArrayList 要移动的list
      * @param newPath           移动的目录
-     * @return
      */
     public void move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
         String url = ApiUrl.MOVE;
@@ -334,20 +324,31 @@ public class FileControl {
         ArrayList<FileBean> fileBeanArrayList = new ArrayList<>();
 
         for (int i = 0; i < returnJson.size(); i++) {
-            JSONObject object = returnJson.getJSONObject(i);
-            FileBean fileBean = object.toBean(FileBean.class);
-            fileBean.setDateTime(DateUtil.date(fileBean.getAtime()).toString());
-            String path = fileBean.getPath();
-            if (path.lastIndexOf("/") == 0) {
-                fileBean.setParentPath("/");
-            } else {
-                fileBean.setParentPath(path.substring(0, path.lastIndexOf("/")));
-            }
+            FileBean fileBean=setTimeAndPath(returnJson, i);
             fileBean.setCheckBox(new TableCheckBox());
 
             fileBeanArrayList.add(fileBean);
         }
         return fileBeanArrayList;
+    }
+
+    /**
+     * 设置bean中的文件大小和路径
+     * @param returnJson json字符串
+     * @param i 位置
+     * @return bean
+     */
+    private FileBean setTimeAndPath(JSONArray returnJson, int i) {
+        JSONObject object = returnJson.getJSONObject(i);
+        FileBean fileBean = object.toBean(FileBean.class);
+        fileBean.setDateTime(DateUtil.date(fileBean.getAtime()).toString());
+        String path = fileBean.getPath();
+        if (path.lastIndexOf("/") == 0) {
+            fileBean.setParentPath("/");
+        } else {
+            fileBean.setParentPath(path.substring(0, path.lastIndexOf("/")));
+        }
+        return fileBean;
     }
 
 }
