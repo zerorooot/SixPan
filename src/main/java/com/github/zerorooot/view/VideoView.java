@@ -6,6 +6,8 @@ import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.serve.FileServe;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -16,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.media.*;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
@@ -142,16 +145,10 @@ public class VideoView extends Application {
                     double videoWidth = embeddedMediaPlayer.video().videoDimension().getWidth();
                     double videoHeight = embeddedMediaPlayer.video().videoDimension().getHeight();
 
-                    if ((videoHeight < screenHeight & videoWidth > screenWidth) || (videoHeight > screenHeight & videoWidth < screenWidth)) {
-                        primaryStage.setWidth(Double.min(videoWidth, screenWidth));
-                        primaryStage.setHeight(Double.min(videoHeight, screenHeight));
-                        return;
-                    }
-                    //分辨率低的视频，强行平铺
-                    if (videoWidth < screenWidth && videoHeight < screenHeight) {
-                        videoImageView.setFitWidth(screenWidth);
-                        videoImageView.setFitHeight(screenHeight - (progressBar.getHeight() * 3));
-
+                    videoImageView.setFitHeight(root.getCenter().getScene().getHeight() - progressBar.getHeight());
+                    //竖屏
+                    if (videoWidth <= videoHeight) {
+                        primaryStage.setWidth(videoWidth);
                     }
 
                 } catch (Exception e) {
@@ -165,6 +162,7 @@ public class VideoView extends Application {
         primaryStage.setTitle(name);
         primaryStage.setScene(scene);
         primaryStage.show();
+        primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
     }
 
     /**
@@ -280,5 +278,14 @@ public class VideoView extends Application {
 
         });
 
+    }
+
+    /**
+     * release vlcj
+     *
+     * @param event close window
+     */
+    private void closeWindowEvent(WindowEvent event) {
+        mediaPlayerFactory.release();
     }
 }

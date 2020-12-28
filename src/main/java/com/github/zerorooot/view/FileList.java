@@ -446,6 +446,14 @@ public class FileList implements Initializable {
     }
 
     /**
+     * 强制播放视频
+     * @param actionEvent actionEvent
+     */
+    public void forcePlay(ActionEvent actionEvent) {
+        openVideoView(getSelectFileBeanArrayList().get(0));
+    }
+
+    /**
      * 进入下一级，返回上一级，
      *
      * @param e
