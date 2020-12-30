@@ -1,6 +1,7 @@
 package com.github.zerorooot.view;
 
 import com.github.zerorooot.bean.FileBean;
+import com.github.zerorooot.bean.ImageParameterBean;
 import com.github.zerorooot.serve.FileServe;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -43,6 +44,7 @@ public class PictureView extends Application {
     private int currentIndex = 0;
     private List<FileBean> pictureArrayList;
     private ConcurrentHashMap<Integer, Image> imageCache;
+    private ConcurrentHashMap<Integer, ImageParameterBean> imageParameterCache;
 
     public PictureView(FileBean fileBean, String token) {
         this.fileBean = fileBean;
@@ -58,7 +60,7 @@ public class PictureView extends Application {
         stackPane.getChildren().add(imageView);
         service = loading(stackPane, primaryStage);
 
-        pictureArrayList = initPictureArrayListAndImageCache(fileBean);
+        pictureArrayList = initPictureArrayListAndImageCacheAndImageParameterCache(fileBean);
 
         primaryStage.setWidth(1280);
         primaryStage.setHeight(720);
@@ -83,11 +85,13 @@ public class PictureView extends Application {
     }
 
 
-    private List<FileBean> initPictureArrayListAndImageCache(FileBean fileBean) {
+    private List<FileBean> initPictureArrayListAndImageCacheAndImageParameterCache(FileBean fileBean) {
         List<FileBean> pictureArrayList =
                 fileServe.getNonDirectory(fileBean.getParentPath()).stream().filter(e -> e.getMime().contains("image")).collect(Collectors.toList());
 
         imageCache = new ConcurrentHashMap<>(pictureArrayList.size());
+
+        imageParameterCache = new ConcurrentHashMap<>(pictureArrayList.size());
 
         for (int i = 0; i < pictureArrayList.size(); i++) {
             if (fileBean.getPath().equals(pictureArrayList.get(i).getPath())) {
@@ -127,7 +131,10 @@ public class PictureView extends Application {
                         Platform.runLater(() -> {
                             stackPane.getChildren().removeAll(stackPane.getChildren());
                             stackPane.getChildren().add(imageView);
-                            primaryStage.setWidth(primaryStage.getHeight() * width / height);
+                            ImageParameterBean imageParameterBean = getImageParameterCache(primaryStage);
+                            primaryStage.setHeight(imageParameterBean.getHeight());
+                            primaryStage.setWidth(imageParameterBean.getWidth());
+
                             //居中
                             primaryStage.centerOnScreen();
                         });
@@ -142,6 +149,7 @@ public class PictureView extends Application {
 
     /**
      * 从缓存中获取图片
+     *
      * @return 缓存中的图片
      */
     private Image getCacheImage() {
@@ -151,6 +159,25 @@ public class PictureView extends Application {
             return image;
         }
         return imageCache.get(currentIndex);
+    }
+
+    /**
+     * 从缓存中获取图片参数
+     *
+     * @return 缓存中的图片参数
+     */
+    private ImageParameterBean getImageParameterCache(Stage primaryStage) {
+        if (imageParameterCache.get(currentIndex) == null) {
+            ImageParameterBean imageParameterBean = fileServe.imagePreview(fileBean);
+            //预览不存在
+            if (imageParameterBean.getHeight() == 0 && imageParameterBean.getWidth() == 0) {
+                imageParameterBean.setHeight((int) primaryStage.getHeight());
+                imageParameterBean.setWidth((int) (primaryStage.getHeight() * image.getWidth() / image.getHeight()));
+            }
+            imageParameterCache.put(currentIndex, imageParameterBean);
+            return imageParameterBean;
+        }
+        return imageParameterCache.get(currentIndex);
     }
 
 

@@ -3,6 +3,7 @@ package com.github.zerorooot.serve;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.github.zerorooot.bean.FileBean;
+import com.github.zerorooot.bean.ImageParameterBean;
 import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.control.FileControl;
 
@@ -120,6 +121,14 @@ public class FileServe {
         return fileControl.download(fileBeanArrayList);
     }
 
+    /**
+     * 图片预览
+     * @param fileBean file bean
+     * @return image
+     */
+    public ImageParameterBean imagePreview(FileBean fileBean) {
+        return fileControl.imagePreview(fileBean.getIdentity());
+    }
 
     /**
      * 获取下载地址

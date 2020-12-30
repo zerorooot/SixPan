@@ -6,10 +6,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import com.github.zerorooot.bean.ApiUrl;
-import com.github.zerorooot.bean.FileBean;
-import com.github.zerorooot.bean.OffLineBean;
-import com.github.zerorooot.bean.TableCheckBox;
+import com.github.zerorooot.bean.*;
 import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
@@ -199,6 +196,24 @@ public class FileControl {
         post.body(jsonObject.toString());
         JSONObject returnJson = new JSONObject(post.execute().body());
         return returnJson.getStr("downloadAddress", null);
+    }
+
+
+    /**
+     * 图片预览
+     * @param identity 图片id
+     * @return picture bean
+     */
+    public ImageParameterBean imagePreview(String identity) {
+        String url = ApiUrl.IMAGE_PREVIEW;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.set("identity", identity);
+        HttpRequest post = HttpUtil.createPost(url);
+        post.header("authorization", token);
+        post.body(jsonObject.toString());
+        JSONObject returnJson = new JSONObject(post.execute().body());
+        ImageParameterBean imagePreview = returnJson.toBean(ImageParameterBean.class);
+        return imagePreview;
     }
 
 

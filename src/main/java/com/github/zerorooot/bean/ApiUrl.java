@@ -20,4 +20,5 @@ public class ApiUrl {
     public static final String OFFLINE_LIST = "https://api.2dland.cn/v3/offline/list";
     public static final String DELETE_COMPLETE = "https://api.2dland.cn/v3/offline/clear";
     public static final String OFFLINE_DELETE = "https://api.2dland.cn/v3/offline/delete";
+    public static final String IMAGE_PREVIEW = "https://api.2dland.cn/v3/preview/image";
 }
