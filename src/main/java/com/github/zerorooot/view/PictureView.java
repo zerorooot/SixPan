@@ -127,8 +127,7 @@ public class PictureView extends Application {
                         Platform.runLater(() -> {
                             stackPane.getChildren().removeAll(stackPane.getChildren());
                             stackPane.getChildren().add(imageView);
-                            primaryStage.setHeight(720);
-                            primaryStage.setWidth(720 * width / height);
+                            primaryStage.setWidth(primaryStage.getHeight() * width / height);
                             //居中
                             primaryStage.centerOnScreen();
                         });

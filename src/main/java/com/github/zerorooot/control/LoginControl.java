@@ -37,7 +37,7 @@ public class LoginControl {
         String cookie = loginHttpResponse.getCookies().toString().replace("[", "").replace("]", "");
         JSONObject resultJson = new JSONObject(loginHttpResponse.body());
         if (resultJson.getBool("success")){
-            String checkCookieUrl = ApiUrl.CHECKCOOKIE;
+            String checkCookieUrl = ApiUrl.CHECK_COOKIE;
             HttpRequest checkCookieGet = HttpUtil.createGet(checkCookieUrl);
             checkCookieGet.header("cookie", cookie);
             checkCookieGet.setFollowRedirects(false);

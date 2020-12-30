@@ -111,6 +111,15 @@ public class FileServe {
         return fileControl.download(fileBean.getIdentity());
     }
 
+    /**
+     *  打包下载
+     * @param fileBeanArrayList file list
+     * @return download url
+     */
+    public String download(ArrayList<FileBean> fileBeanArrayList )  {
+        return fileControl.download(fileBeanArrayList);
+    }
+
 
     /**
      * 获取下载地址

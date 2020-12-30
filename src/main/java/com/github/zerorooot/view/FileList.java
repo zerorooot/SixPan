@@ -82,8 +82,8 @@ public class FileList implements Initializable {
         //比较文件大小，方便排序
         sizeTableColumn.setComparator((o1, o2) -> {
             try {
-                long o1Long = DataSizeUtil.parse(o1.replace(" ", ""));
-                long o2Long = DataSizeUtil.parse(o2.replace(" ", ""));
+                long o1Long = DataSizeUtil.parse(o1.replace(" ", "").replace(",", ""));
+                long o2Long = DataSizeUtil.parse(o2.replace(" ", "").replace(",", ""));
                 return o1Long > o2Long ? 0 : 1;
             } catch (Exception e) {
                 System.err.println(o1 + "           " + o2);
@@ -117,7 +117,7 @@ public class FileList implements Initializable {
     /**
      * Column重命名
      *
-     * @param t
+     * @param t CellEditEvent
      */
     public void rename(TableColumn.CellEditEvent<FileBean, String> t) {
         FileBean fileBean = t.getRowValue();
@@ -128,7 +128,7 @@ public class FileList implements Initializable {
     /**
      * 重命名某文件
      *
-     * @param actionEvent
+     * @param actionEvent ActionEvent
      */
     public void getEditItem(ActionEvent actionEvent) {
         editFileName();
@@ -137,7 +137,7 @@ public class FileList implements Initializable {
     /**
      * 创建新文件
      *
-     * @param actionEvent
+     * @param actionEvent ActionEvent
      */
     public void getCreateFolderItem(ActionEvent actionEvent) {
         TextInputDialog dialog = new TextInputDialog();
@@ -149,7 +149,7 @@ public class FileList implements Initializable {
         //刷新
         result.ifPresent(name -> {
             fileServe.createFolder(label.getText(), name);
-            fileBeanObservableList.removeAll(fileBeanObservableList);
+            fileBeanObservableList.clear();
             fileBeanObservableList.addAll(fileServe.getFileAll(label.getText()));
             table.setItems(fileBeanObservableList);
         });
@@ -158,7 +158,7 @@ public class FileList implements Initializable {
     /**
      * 移动文件
      *
-     * @param actionEvent
+     * @param actionEvent  actionEvent
      */
     public void getMoveFileItem(ActionEvent actionEvent) {
         ArrayList<FileBean> moveFileBeanArrayList = getSelectFileBeanArrayList();
@@ -195,7 +195,7 @@ public class FileList implements Initializable {
         moveTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 FileBean fileBean = moveTable.getSelectionModel().getSelectedItem();
-                moveFileBeanObservableList.removeAll(moveFileBeanObservableList);
+                moveFileBeanObservableList.clear();
                 moveFileBeanObservableList.addAll(fileServe.getDirectory(fileBean.getPath()));
                 moveTable.setItems(moveFileBeanObservableList);
                 moveLabel.setText(fileBean.getPath());
@@ -211,7 +211,7 @@ public class FileList implements Initializable {
                     path = (path.substring(0, path.lastIndexOf("/")));
                 }
                 moveLabel.setText(path);
-                moveFileBeanObservableList.removeAll(moveFileBeanObservableList);
+                moveFileBeanObservableList.clear();
                 moveFileBeanObservableList.addAll(fileServe.getDirectory(path));
                 moveTable.setItems(moveFileBeanObservableList);
             }
@@ -236,7 +236,7 @@ public class FileList implements Initializable {
     /**
      * 搜索文件
      *
-     * @param actionEvent
+     * @param actionEvent actionEvent
      */
     public void getSearchFileItem(ActionEvent actionEvent) {
         TextInputDialog dialog = new TextInputDialog();
@@ -247,7 +247,7 @@ public class FileList implements Initializable {
 
         //刷新
         result.ifPresent(name -> {
-            fileBeanObservableList.removeAll(fileBeanObservableList);
+            fileBeanObservableList.clear();
             fileBeanObservableList.addAll(fileServe.searchFile(name));
             table.setItems(fileBeanObservableList);
         });
@@ -256,7 +256,7 @@ public class FileList implements Initializable {
     /**
      * 刷新table
      *
-     * @param actionEvent
+     * @param actionEvent actionEvent
      */
     public void getFlushItem(ActionEvent actionEvent) {
         flush();
@@ -265,7 +265,7 @@ public class FileList implements Initializable {
     /**
      * 获取文件信息
      *
-     * @param actionEvent
+     * @param actionEvent actionEvent
      */
     public void getFileInfoItem(ActionEvent actionEvent) {
         StringBuffer stringBuffer = new StringBuffer();
@@ -302,7 +302,7 @@ public class FileList implements Initializable {
     /**
      * 删除文件
      *
-     * @param actionEvent
+     * @param actionEvent  actionEvent
      */
     public void getDeleteItem(ActionEvent actionEvent) {
         ArrayList<FileBean> deleteFileBeanArrayList = getSelectFileBeanArrayList();
@@ -341,7 +341,7 @@ public class FileList implements Initializable {
     /**
      * 打开离线列表
      *
-     * @param actionEvent
+     * @param actionEvent actionEvent
      */
     @SneakyThrows
     public void getOffLineltem(ActionEvent actionEvent) {
@@ -371,7 +371,7 @@ public class FileList implements Initializable {
             if (event.getClickCount() == 2) {
                 //进入FistList文件夹
                 if (selectedItem.isDirectory()) {
-                    fileBeanObservableList.removeAll(fileBeanObservableList);
+                    fileBeanObservableList.clear();
                     fileBeanObservableList.addAll(fileServe.getFileAll(selectedItem.getAccessPath()));
                     table.setItems(fileBeanObservableList);
                     label.setText(selectedItem.getAccessPath());
@@ -394,7 +394,7 @@ public class FileList implements Initializable {
     /**
      * 将下载链接输出到系统剪贴板
      *
-     * @param actionEvent
+     * @param actionEvent actionEvent
      */
     public void getDownloadItem(ActionEvent actionEvent) {
         ArrayList<FileBean> fileBeanArrayList = getSelectFileBeanArrayList();
@@ -412,21 +412,32 @@ public class FileList implements Initializable {
         borderPane.setCenter(progressBar);
         dialog.getDialogPane().setContent(borderPane);
 
-        StringBuilder stringBuilder = new StringBuilder();
+
         Service<Integer> service = new Service<>() {
             @Override
             protected Task<Integer> createTask() {
                 return new Task<>() {
                     @Override
                     protected Integer call() {
-                        for (int i = 0; i < fileBeanArrayList.size(); i++) {
-                            String download = fileServe.download(fileBeanArrayList.get(i));
-                            stringBuilder.append(download);
-                            stringBuilder.append("\n");
-                            updateProgress(i + 1, fileBeanArrayList.size());
+                        String downloadUrl;
+                        if (fileBeanArrayList.size() == 1 && !fileBeanArrayList.get(0).isDirectory()) {
+                            downloadUrl = fileServe.download(fileBeanArrayList.get(0));
+                        } else {
+                            downloadUrl = fileServe.download(fileBeanArrayList);
                         }
+
                         Platform.runLater(dialog::close);
-                        ClipBoardUtil.setClipboardString(stringBuilder.toString());
+                        if (Objects.nonNull(downloadUrl)) {
+                            ClipBoardUtil.setClipboardString(downloadUrl);
+                        } else {
+                            Platform.runLater(() -> {
+                                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                                errorAlert.setTitle("下载失败");
+                                errorAlert.setContentText("文件总大小超过限制");
+                                errorAlert.show();
+                            });
+                        }
+
                         return null;
                     }
                 };
@@ -447,6 +458,7 @@ public class FileList implements Initializable {
 
     /**
      * 强制播放视频
+     *
      * @param actionEvent actionEvent
      */
     public void forcePlay(ActionEvent actionEvent) {
@@ -477,15 +489,18 @@ public class FileList implements Initializable {
 
     /**
      * table 按钮事件
-     * F2重命名
+     * F2重命名 delete 删除
      *
-     * @param e
+     * @param e KeyEvent
      */
     public void tableKey(KeyEvent e) {
         if (e.getCode() == KeyCode.F2) {
             editFileName();
         }
-
+        if (e.getCode() == KeyCode.DELETE) {
+            getDeleteItem(new ActionEvent());
+        }
+        
     }
 
     /**
@@ -503,7 +518,7 @@ public class FileList implements Initializable {
                 if (fileBean.isDirectory()) {
                     currentSelectionRow = table.getSelectionModel().getSelectedIndex();
 
-                    fileBeanObservableList.removeAll(fileBeanObservableList);
+                    fileBeanObservableList.clear();
                     fileBeanObservableList.addAll(fileServe.getFileAll(fileBean.getPath()));
                     table.setItems(fileBeanObservableList);
                     label.setText(fileBean.getPath());
@@ -560,6 +575,7 @@ public class FileList implements Initializable {
 
     /**
      * play video
+     *
      * @param videoView {@link VideoView}
      */
     private void openVideoView(VideoView videoView) {
@@ -596,7 +612,7 @@ public class FileList implements Initializable {
      * 刷新table
      */
     private void flush() {
-        fileBeanObservableList.removeAll(fileBeanObservableList);
+        fileBeanObservableList.clear();
         fileBeanObservableList.addAll(fileServe.getFileAll(label.getText()));
         table.setItems(fileBeanObservableList);
     }
@@ -614,7 +630,7 @@ public class FileList implements Initializable {
             } else {
                 path = (path.substring(0, path.lastIndexOf("/")));
             }
-            fileBeanObservableList.removeAll(fileBeanObservableList);
+            fileBeanObservableList.clear();
             fileBeanObservableList.addAll(fileServe.getFileAll(path));
             table.setItems(fileBeanObservableList);
             label.setText(path);

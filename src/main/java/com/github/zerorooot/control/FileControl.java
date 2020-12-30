@@ -11,9 +11,7 @@ import com.github.zerorooot.bean.FileBean;
 import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.bean.TableCheckBox;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -31,7 +29,7 @@ public class FileControl {
      * 获取所有文件
      *
      * @param parentPath 文件路径
-     * @return
+     * @return 获取所有文件
      */
     public ArrayList<FileBean> getFileAll(String parentPath) {
         return getFile(parentPath, null);
@@ -41,7 +39,7 @@ public class FileControl {
      * 获取文件目录
      *
      * @param parentPath 文件路径
-     * @return
+     * @return 文件目录
      */
     public ArrayList<FileBean> getDirectory(String parentPath) {
         return getFile(parentPath, true);
@@ -62,7 +60,7 @@ public class FileControl {
      *
      * @param parentPath 文件路径
      * @param directory  是否是目录
-     * @return
+     * @return 获取文件
      */
     public ArrayList<FileBean> getFile(String parentPath, Boolean directory) {
         String url = ApiUrl.LIST;
@@ -155,7 +153,7 @@ public class FileControl {
      * @param folderName 新文件夹名
      */
     public void createFolder(String path, String folderName) {
-        String url = ApiUrl.CREATEFOLDER;
+        String url = ApiUrl.CREATE_FOLDER;
         JSONObject jsonObject = new JSONObject();
         jsonObject.set("path", path);
         jsonObject.set("name", folderName);
@@ -165,12 +163,11 @@ public class FileControl {
     }
 
     /**
-     * 获取文件下载url
+     * 获取单个文件下载url
      *
      * @param identity 文件识别号
-     * @return
+     * @return  下载url
      */
-    @SneakyThrows
     public String download(String identity) {
         String url = ApiUrl.DOWNLOAD;
         JSONObject jsonObject = new JSONObject();
@@ -180,12 +177,30 @@ public class FileControl {
         post.body(jsonObject.toString());
 
         JSONObject returnJson = new JSONObject(post.execute().body());
-        while (returnJson.getStr("success") != null) {
-            Thread.sleep(100);
-            returnJson = new JSONObject(post.execute().body());
-        }
         return returnJson.getStr("downloadAddress");
     }
+
+    /**
+     * 打包下载
+     * @param fileBeanArrayList bean list
+     * @return 下载链接 or null
+     */
+    public String download(ArrayList<FileBean> fileBeanArrayList ) {
+        String url = ApiUrl.PACKUP_DOWNLOAD;
+        JSONArray jsonArray = new JSONArray();
+        for (FileBean fileBean : fileBeanArrayList) {
+            jsonArray.put(fileBean.getIdentity());
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.set("sourceIdentity", jsonArray);
+        HttpRequest post = HttpUtil.createPost(url);
+        post.header("authorization", token);
+        post.body(jsonObject.toString());
+        JSONObject returnJson = new JSONObject(post.execute().body());
+        return returnJson.getStr("downloadAddress", null);
+    }
+
 
     /**
      * 查看当前离线下载的配额
@@ -208,7 +223,7 @@ public class FileControl {
      *
      * @param textLink 离线下载的url
      * @param password 离线下载的密码
-     * @return
+     * @return hash
      */
     public String parse(String textLink, String password) {
         String url = ApiUrl.PARSE;
@@ -231,10 +246,9 @@ public class FileControl {
      * 离线下载文件
      *
      * @param json 文件的url
-     * @return
      */
     public void addOffLine(String json) {
-        String url = ApiUrl.ADDOFFLINE;
+        String url = ApiUrl.ADD_OFFLINE;
         HttpRequest post = HttpUtil.createPost(url);
         post.header("authorization", token);
         post.body(json);
@@ -244,10 +258,9 @@ public class FileControl {
     /**
      * 获取离线下载列表
      *
-     * @return
      */
     public ArrayList<OffLineBean> getOffLine() {
-        String url = ApiUrl.OFFLINELIST;
+        String url = ApiUrl.OFFLINE_LIST;
         HttpRequest post = HttpUtil.createPost(url);
         post.header("authorization", token);
         JSONObject jsonObject = new JSONObject();
@@ -272,10 +285,9 @@ public class FileControl {
     /**
      * 把离线已完成的文件从离线列表中移除(不删除文件)
      *
-     * @return
      */
     public void deleteComplete() {
-        String url = ApiUrl.DELETECOMPLETE;
+        String url = ApiUrl.DELETE_COMPLETE;
         HttpRequest post = HttpUtil.createPost(url);
         post.header("authorization", token);
         JSONObject jsonObject = new JSONObject();
@@ -289,10 +301,9 @@ public class FileControl {
      * 删除某离线文件
      *
      * @param offLineBeanArrayList 要删除的list
-     * @return
      */
     public void offLineDelete(ArrayList<OffLineBean> offLineBeanArrayList) {
-        String url = ApiUrl.OFFLINEDELETE;
+        String url = ApiUrl.OFFLINE_DELETE;
         HttpRequest post = HttpUtil.createPost(url);
         post.header("authorization", token);
         JSONArray jsonArray = new JSONArray();
@@ -308,7 +319,6 @@ public class FileControl {
      * 搜索文件
      *
      * @param fileName 文件名
-     * @return
      */
     public ArrayList<FileBean> searchFile(String fileName) {
         String url = ApiUrl.LIST;

@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -72,8 +73,6 @@ public class VideoView extends Application {
     @Override
     public final void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        double screenWidth = 1294;
-        double screenHeight = 797;
         BorderPane root = new BorderPane();
         Scene scene = new Scene(root, 1280, 755, Color.BLACK);
         progressBar = new ProgressBar(0);
@@ -90,13 +89,8 @@ public class VideoView extends Application {
                 primaryStage.setFullScreen(true);
             }
         });
-        progressBar.setOnMouseClicked(ev -> {
-            double x = ev.getX();
-            double progressPercent = x / progressBar.getWidth();
-            embeddedMediaPlayer.controls().setPosition((float) progressPercent);
-            progressBar.setProgress(progressPercent);
-            primaryStage.setTitle(name + "    " + secondToTime(embeddedMediaPlayer.status().time() / 1000) + "/" + secondToTime(embeddedMediaPlayer.status().length() / 1000));
-        });
+        progressBar.setOnMouseClicked(this::progressBarSetOnMouseClicked);
+
         progressBar.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
 
@@ -162,7 +156,6 @@ public class VideoView extends Application {
         primaryStage.show();
         primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
     }
-
     /**
      * 秒转成正常时间
      *
@@ -285,5 +278,13 @@ public class VideoView extends Application {
      */
     private void closeWindowEvent(WindowEvent event) {
         mediaPlayerFactory.release();
+    }
+
+    private void progressBarSetOnMouseClicked(MouseEvent ev) {
+        double x = ev.getX();
+        double progressPercent = x / progressBar.getWidth();
+        embeddedMediaPlayer.controls().setPosition((float) progressPercent);
+        progressBar.setProgress(progressPercent);
+        primaryStage.setTitle(name + "    " + secondToTime(embeddedMediaPlayer.status().time() / 1000) + "/" + secondToTime(embeddedMediaPlayer.status().length() / 1000));
     }
 }
