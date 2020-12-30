@@ -6,8 +6,6 @@ import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.serve.FileServe;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
