@@ -34,7 +34,6 @@ import java.util.*;
  * @Author: zero
  * @Date: 2020/8/19 21:13
  * TODO
- * TableView shift多选
  * 进入下一级loading
  */
 @NoArgsConstructor

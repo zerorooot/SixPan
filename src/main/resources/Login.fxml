@@ -5,8 +5,8 @@
 
 
 <AnchorPane prefHeight="229.0" prefWidth="373.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.zerorooot.view.Login">
-    <Button fx:id="loginButton" layoutX="158.0" layoutY="169.0" mnemonicParsing="false" onMouseClicked="#login"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.zerorooot.view.Login" fx:id="anchorPane">
+    <Button fx:id="loginButton" layoutX="158.0" layoutY="169.0" mnemonicParsing="false" onMouseClicked="#loading"
             text="登录"/>
     <Label layoutX="77.0" layoutY="70.0" text="账号"/>
     <Label layoutX="78.0" layoutY="113.0" text="密码"/>
