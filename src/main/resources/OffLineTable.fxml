@@ -9,7 +9,6 @@
    <center>
       <TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" fx:id="table">
         <columns>
-          <TableColumn prefWidth="75.0" fx:id="checkBoxColumn"/>
           <TableColumn prefWidth="75.0" text="文件名称" fx:id="fileNameColumn"/>
             <TableColumn prefWidth="75.0" text="存储路径"  fx:id="savePathColumn"/>
             <TableColumn prefWidth="75.0" text="下载进度" fx:id="progressColumn"/>

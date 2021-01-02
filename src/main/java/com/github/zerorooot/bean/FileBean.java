@@ -26,6 +26,5 @@ public class FileBean implements Serializable {
     private String mime;
 
     private String parentPath;
-    private TableCheckBox checkBox;
     private String sizeString;
 }

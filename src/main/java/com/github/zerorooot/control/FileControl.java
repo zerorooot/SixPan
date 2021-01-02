@@ -82,7 +82,6 @@ public class FileControl {
             long size = fileBean.getSize();
             fileBean.setSizeString(DataSizeUtil.format(size));
 
-            fileBean.setCheckBox(new TableCheckBox());
 
             fileBeanLinkedList.add(fileBean);
         }
@@ -290,7 +289,6 @@ public class FileControl {
             if ("text/directory".equals(offLineBean.getFileMime())) {
                 offLineBean.setDirectory(true);
             }
-            offLineBean.setCheckBox(new TableCheckBox());
             arrayList.add(offLineBean);
         }
 
@@ -350,7 +348,6 @@ public class FileControl {
 
         for (int i = 0; i < returnJson.size(); i++) {
             FileBean fileBean=setTimeAndPath(returnJson, i);
-            fileBean.setCheckBox(new TableCheckBox());
 
             fileBeanArrayList.add(fileBean);
         }

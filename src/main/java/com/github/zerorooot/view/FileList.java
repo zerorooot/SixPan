@@ -39,7 +39,6 @@ import java.util.*;
  */
 @NoArgsConstructor
 public class FileList implements Initializable {
-    public TableColumn<FileBean, CheckBox> checkBoxColumn;
     public TableColumn<FileBean, String> nameTableColumn;
     public TableColumn<FileBean, String> sizeTableColumn;
     public TableColumn<FileBean, String> createTimeColumn;
@@ -67,14 +66,12 @@ public class FileList implements Initializable {
 
         //设置column大小
         table.setColumnResizePolicy(resizeFeatures -> {
-            checkBoxColumn.setPrefWidth(table.widthProperty().get() * 0.03);
             nameTableColumn.setPrefWidth(table.widthProperty().get() * 0.7);
             sizeTableColumn.setPrefWidth(table.widthProperty().get() * 0.126);
-            createTimeColumn.setPrefWidth(table.widthProperty().get() * 0.126);
+            createTimeColumn.setPrefWidth(table.widthProperty().get() * 0.155);
             return true;
         });
         //设置column数值
-        checkBoxColumn.setCellValueFactory(cellData -> cellData.getValue().getCheckBox().getCheckBox());
         nameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         nameTableColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         nameTableColumn.setEditable(true);
@@ -94,15 +91,6 @@ public class FileList implements Initializable {
             return 0;
         });
 
-        //设置全选按钮
-        Label checkBoxColumnLable = new Label("全选");
-        checkBoxColumnLable.setOnMouseClicked(e -> {
-            table.getItems().forEach(s -> {
-                s.getCheckBox().setSelect(!s.getCheckBox().isSelected());
-            });
-        });
-        checkBoxColumn.setGraphic(checkBoxColumnLable);
-        checkBoxColumn.setSortable(false);
 
         //输出数值
         ArrayList<FileBean> fileBeanArrayList = fileServe.getFileAll("/");
@@ -114,7 +102,8 @@ public class FileList implements Initializable {
             contextMenu.show(table, event.getScreenX(), event.getScreenY());
         });
 
-
+        // shift选择
+        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     /**
@@ -161,7 +150,7 @@ public class FileList implements Initializable {
     /**
      * 移动文件
      *
-     * @param actionEvent  actionEvent
+     * @param actionEvent actionEvent
      */
     public void getMoveFileItem(ActionEvent actionEvent) {
         ArrayList<FileBean> moveFileBeanArrayList = getSelectFileBeanArrayList();
@@ -305,7 +294,7 @@ public class FileList implements Initializable {
     /**
      * 删除文件
      *
-     * @param actionEvent  actionEvent
+     * @param actionEvent actionEvent
      */
     public void getDeleteItem(ActionEvent actionEvent) {
         ArrayList<FileBean> deleteFileBeanArrayList = getSelectFileBeanArrayList();
@@ -370,7 +359,10 @@ public class FileList implements Initializable {
 
         offLineTable.table.setOnMouseClicked(event -> {
             OffLineBean selectedItem = offLineTable.table.getSelectionModel().getSelectedItem();
-            offLineTable.contextMenu.hide();
+            if (event.getButton() == MouseButton.PRIMARY) {
+                offLineTable.contextMenu.hide();
+            }
+
             if (event.getClickCount() == 2) {
                 //进入FistList文件夹
                 if (selectedItem.isDirectory()) {
@@ -503,7 +495,7 @@ public class FileList implements Initializable {
         if (e.getCode() == KeyCode.DELETE) {
             getDeleteItem(new ActionEvent());
         }
-        
+
     }
 
     /**
@@ -597,18 +589,7 @@ public class FileList implements Initializable {
      * @return all select item
      */
     private ArrayList<FileBean> getSelectFileBeanArrayList() {
-        ArrayList<FileBean> selectFileBeanArrayList = new ArrayList<>();
-        table.getItems().forEach(s -> {
-            if (s.getCheckBox().isSelected()) {
-                selectFileBeanArrayList.add(s);
-            }
-        });
-
-        if (Objects.nonNull(table.getSelectionModel().getSelectedItem()) && selectFileBeanArrayList.size() == 0) {
-            FileBean fileBean = table.getSelectionModel().getSelectedItem();
-            selectFileBeanArrayList.add(fileBean);
-        }
-        return selectFileBeanArrayList;
+        return new ArrayList<>(table.getSelectionModel().getSelectedItems());
     }
 
     /**

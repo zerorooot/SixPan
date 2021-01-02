@@ -24,6 +24,5 @@ public class OffLineBean {
     private String time;
     private String fileMime;
     private boolean directory;
-    private TableCheckBox checkBox;
     private String taskIdentity;
 }

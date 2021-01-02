@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -29,7 +30,6 @@ import java.util.ResourceBundle;
  */
 @NoArgsConstructor
 public class OffLineTable implements Initializable {
-    public TableColumn<OffLineBean, CheckBox> checkBoxColumn;
     public TableColumn<OffLineBean, String> fileNameColumn;
     public TableColumn<OffLineBean, String> savePathColumn;
     public TableColumn<OffLineBean, String> progressColumn;
@@ -49,18 +49,8 @@ public class OffLineTable implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         fileServe = new FileServe(token);
+        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-
-        //设置全选按钮
-        checkBoxColumn.setCellValueFactory(cellData -> cellData.getValue().getCheckBox().getCheckBox());
-        Label checkBoxColumnLable = new Label("多选");
-        checkBoxColumnLable.setOnMouseClicked(e -> {
-            table.getItems().forEach(s -> {
-                s.getCheckBox().setSelect(!s.getCheckBox().isSelected());
-            });
-        });
-        checkBoxColumn.setGraphic(checkBoxColumnLable);
-        checkBoxColumn.setSortable(false);
         //设置表数据
         fileNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         savePathColumn.setCellValueFactory(new PropertyValueFactory<>("savePath"));
@@ -78,8 +68,7 @@ public class OffLineTable implements Initializable {
 
         //设置大小
         table.setColumnResizePolicy(resizeFeatures -> {
-            checkBoxColumn.setPrefWidth(table.widthProperty().get() * 0.07);
-            fileNameColumn.setPrefWidth(table.widthProperty().get() * 0.6);
+            fileNameColumn.setPrefWidth(table.widthProperty().get() * 0.67);
             savePathColumn.setPrefWidth(table.widthProperty().get() * 0.1);
             progressColumn.setPrefWidth(table.widthProperty().get() * 0.1);
             creatTimeColumn.setPrefWidth(table.widthProperty().get() * 0.1);
@@ -91,7 +80,7 @@ public class OffLineTable implements Initializable {
     /**
      * 添加离线任务
      *
-     * @param actionEvent
+     * @param actionEvent actionEvent
      */
     public void offLineAdd(ActionEvent actionEvent) {
         try {
@@ -110,7 +99,7 @@ public class OffLineTable implements Initializable {
             offLineAddView.setPath(path);
 
             stages.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, windowEvent -> {
-                fileBeanObservableList.removeAll(fileBeanObservableList);
+                fileBeanObservableList.clear();
                 fileBeanObservableList.addAll(fileServe.getOffLine());
                 table.setItems(fileBeanObservableList);
             });
@@ -126,7 +115,7 @@ public class OffLineTable implements Initializable {
      */
     public void deleteComplete(ActionEvent actionEvent) {
         fileServe.deleteComplete();
-        fileBeanObservableList.removeAll(fileBeanObservableList);
+        fileBeanObservableList.clear();
         fileBeanObservableList.addAll(fileServe.getOffLine());
         table.setItems(fileBeanObservableList);
     }
@@ -137,7 +126,7 @@ public class OffLineTable implements Initializable {
      * @param actionEvent
      */
     public void flush(ActionEvent actionEvent) {
-        fileBeanObservableList.removeAll(fileBeanObservableList);
+        fileBeanObservableList.clear();
         fileBeanObservableList.addAll(fileServe.getOffLine());
         table.setItems(fileBeanObservableList);
     }
@@ -145,20 +134,10 @@ public class OffLineTable implements Initializable {
     /**
      * 删除选中任务
      *
-     * @param actionEvent
+     * @param actionEvent actionEvent
      */
     public void deleteCurrent(ActionEvent actionEvent) {
-        ArrayList<OffLineBean> deleteOffLineBeanArrayList = new ArrayList<>();
-        table.getItems().forEach(s -> {
-            if (s.getCheckBox().isSelected()) {
-                deleteOffLineBeanArrayList.add(s);
-            }
-        });
-
-        if (Objects.nonNull(table.getSelectionModel().getSelectedItem()) && deleteOffLineBeanArrayList.size() == 0) {
-            OffLineBean fileBean = table.getSelectionModel().getSelectedItem();
-            deleteOffLineBeanArrayList.add(fileBean);
-        }
+        ArrayList<OffLineBean> deleteOffLineBeanArrayList =new ArrayList<>(table.getSelectionModel().getSelectedItems());
         fileServe.offLineDelete(deleteOffLineBeanArrayList);
         table.getItems().removeAll(deleteOffLineBeanArrayList);
     }
@@ -166,7 +145,7 @@ public class OffLineTable implements Initializable {
     /**
      * 获取任务详情
      *
-     * @param actionEvent
+     * @param actionEvent actionEvent
      */
     public void detail(ActionEvent actionEvent) {
         OffLineBean selectedItem = table.getSelectionModel().getSelectedItem();
