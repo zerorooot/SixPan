@@ -14,11 +14,15 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * @Author: zero
@@ -34,6 +38,8 @@ public class AutoLogin extends Preloader {
         new Thread(() -> {
             load(primaryStage);
         }).start();
+
+//        login(primaryStage);
 
     }
 
@@ -83,6 +89,16 @@ public class AutoLogin extends Preloader {
         primaryStage.centerOnScreen();
         primaryStage.setTitle("");
         primaryStage.show();
+
+        primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeAllWindows);
+    }
+
+    private void closeAllWindows(WindowEvent event) {
+        List<Window> openWindowsList = Window.getWindows().stream().filter(Window::isShowing).collect(Collectors.toList());
+        openWindowsList.forEach(s->{
+            Stage stage = (Stage) s.getScene().getWindow();
+            stage.close();
+        });
     }
 
 }

@@ -71,7 +71,9 @@ public class Login implements Initializable {
             properties.setProperty("password", password);
             PropertiesUtil.setProperties(properties);
             Platform.runLater(() -> {
-                startStage(token, primaryStage);
+                // file list
+                AutoLogin autoLogin = new AutoLogin();
+                autoLogin.fileList(primaryStage, token);
             });
 
         } else {
@@ -87,21 +89,6 @@ public class Login implements Initializable {
                 autoLogin.login(primaryStage);
             });
         }
-    }
-
-    @SneakyThrows
-    private void startStage(String token, Stage primaryStage) {
-        Stage stages = new Stage();
-        FileList fileList = new FileList(token);
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/FileList.fxml"));
-        loader.setController(fileList);
-
-        Parent root = loader.load();
-        stages.setScene(new Scene(root));
-        stages.show();
-
-        primaryStage.close();
-
     }
 
     @SneakyThrows
