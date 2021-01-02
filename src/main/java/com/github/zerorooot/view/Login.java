@@ -22,6 +22,8 @@ import java.util.ResourceBundle;
 /**
  * @Author: zero
  * @Date: 2020/8/19 20:53
+ * TODO
+ * loding 动画
  */
 public class Login implements Initializable {
     public Button loginButton;

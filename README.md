@@ -50,7 +50,7 @@ VideoView--方向键上-->增加音量
 VideoView--方向键下-->减小音量
 VideoView--方向键左-->快退15秒
 VideoView--方向键右-->快进15秒
-VideoView--双击-->全屏模式
+VideoView--双击-->全屏模式(在全屏模式下，鼠标上移，可显示视频时间控制条)
 VideoView--A键-->顺时针旋转视频
 VideoView--D键-->逆时针旋转视频
 FileList--双击图片文件-->PictureView

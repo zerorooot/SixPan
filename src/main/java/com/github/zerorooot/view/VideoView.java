@@ -10,12 +10,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
@@ -35,6 +37,8 @@ import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactor
 
 /**
  * @author ubuntu
+ * TODO
+ * 快进时显示时间（全屏）
  */
 public class VideoView extends Application {
     protected final MediaPlayerFactory mediaPlayerFactory;
@@ -87,12 +91,18 @@ public class VideoView extends Application {
         scene.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 primaryStage.setFullScreen(true);
+                root.setBottom(null);
             }
         });
+        primaryStage.setFullScreenExitKeyCombination(showProgressBarWhenExitFullScreen(root));
         progressBar.setOnMouseClicked(this::progressBarSetOnMouseClicked);
 
         progressBar.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
+
+        videoImageView.setOnMouseMoved(mouseEvent -> {
+            showProgressBarWhenMouseUp(mouseEvent, root);
+        });
 
         embeddedMediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
             @Override
@@ -146,16 +156,54 @@ public class VideoView extends Application {
                 } catch (Exception e) {
                     errorDialog("open error", e);
                 }
-
-
             }
         });
 
         primaryStage.setTitle(name);
         primaryStage.setScene(scene);
         primaryStage.show();
-        primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
     }
+
+    /**
+     * 当鼠标移到顶端时，显示进度条
+     * @param mouseEvent mouseEvent
+     * @param root pane
+     */
+    private void showProgressBarWhenMouseUp(MouseEvent mouseEvent,BorderPane root) {
+        double screenHeight = Screen.getPrimary().getBounds().getHeight();
+        if (primaryStage.isFullScreen()) {
+            if (mouseEvent.getY() <= 30) {
+                Platform.runLater(() -> {
+                    root.setTop(progressBar);
+                });
+            } else {
+                Platform.runLater(() -> {
+                    root.setTop(null);
+                });
+            }
+        }
+    }
+
+    /**
+     * 显示ProgressBar当离开全屏时
+     *
+     * @param root BorderPane
+     * @return KeyCombination
+     */
+    private KeyCombination showProgressBarWhenExitFullScreen(BorderPane root) {
+        return new KeyCombination() {
+            @Override
+            public boolean match(KeyEvent event) {
+                if (event.getCode() == KeyCode.ESCAPE) {
+                    root.setBottom(progressBar);
+                    root.setTop(null);
+                    return true;
+                }
+                return false;
+            }
+        };
+    }
+
     /**
      * 秒转成正常时间
      *
@@ -269,15 +317,6 @@ public class VideoView extends Application {
 
         });
 
-    }
-
-    /**
-     * release vlcj
-     *
-     * @param event close window
-     */
-    private void closeWindowEvent(WindowEvent event) {
-        mediaPlayerFactory.release();
     }
 
     private void progressBarSetOnMouseClicked(MouseEvent ev) {

@@ -302,33 +302,38 @@ public class PictureView extends Application {
      * @param primaryStage primaryStage
      */
     private void upOrDownPicture(KeyEvent keyEvent, Stage primaryStage) {
-        //上一张
-        if (keyEvent.getCode() == KeyCode.LEFT && currentIndex > 0) {
-            currentIndex = currentIndex - 1;
-            FileBean currentFileBean = pictureArrayList.get(currentIndex);
-            primaryStage.setTitle(currentFileBean.getName() + "  " + (currentIndex + 1) + "/" + pictureArrayList.size());
+        if (!service.isRunning()) {
 
-            this.fileBean = currentFileBean;
-            service.restart();
-        }
-        //下一张
-        if (keyEvent.getCode() == KeyCode.RIGHT && currentIndex + 1 < pictureArrayList.size()) {
-            currentIndex = currentIndex + 1;
-            FileBean currentFileBean = pictureArrayList.get(currentIndex);
-            primaryStage.setTitle(currentFileBean.getName() + "  " + (currentIndex + 1) + "/" + pictureArrayList.size());
+            //上一张
+            if (keyEvent.getCode() == KeyCode.LEFT && currentIndex > 0) {
+                currentIndex = currentIndex - 1;
+                FileBean currentFileBean = pictureArrayList.get(currentIndex);
+                primaryStage.setTitle(currentFileBean.getName() + "  " + (currentIndex + 1) + "/" + pictureArrayList.size());
 
-            this.fileBean = currentFileBean;
-            service.restart();
-        }
-        //顺时针旋转图片
-        if (keyEvent.getCode() == KeyCode.UP) {
-            imageView.setRotate(imageView.getRotate() + 90);
+                this.fileBean = currentFileBean;
+                service.restart();
+            }
+            //下一张
+            if (keyEvent.getCode() == KeyCode.RIGHT && currentIndex + 1 < pictureArrayList.size()) {
+                currentIndex = currentIndex + 1;
+                FileBean currentFileBean = pictureArrayList.get(currentIndex);
+                primaryStage.setTitle(currentFileBean.getName() + "  " + (currentIndex + 1) + "/" + pictureArrayList.size());
+
+                this.fileBean = currentFileBean;
+                service.restart();
+            }
+            //顺时针旋转图片
+            if (keyEvent.getCode() == KeyCode.UP) {
+                imageView.setRotate(imageView.getRotate() + 90);
+            }
+
+            //逆时针旋转图片
+            if (keyEvent.getCode() == KeyCode.DOWN) {
+                imageView.setRotate(imageView.getRotate() - 90);
+            }
         }
 
-        //逆时针旋转图片
-        if (keyEvent.getCode() == KeyCode.DOWN) {
-            imageView.setRotate(imageView.getRotate() - 90);
-        }
     }
+
 }
 
