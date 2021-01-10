@@ -43,6 +43,7 @@ FileList--右键-->高级操作
 高级操作---->downloadItem(获取链接)
 高级操作---->forcePlay(强行播放)
 高级操作---->exitLogin(退出登录)
+FileList--右键-->离线相关
 离线相关---->addOffLineItem(离线下载)
 离线相关---->offLineViewltem(离线列表)
 offLineViewltem--右键-->offLineAdd(添加离线任务)

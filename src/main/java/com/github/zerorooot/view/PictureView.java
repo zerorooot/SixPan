@@ -14,6 +14,7 @@ import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -41,14 +42,21 @@ public class PictureView extends Application {
     private final FileServe fileServe;
 
     private FileBean fileBean;
+    TableView<FileBean> tableView;
     private int currentIndex = 0;
     private List<FileBean> pictureArrayList;
     private ConcurrentHashMap<Integer, Image> imageCache;
     private ConcurrentHashMap<Integer, ImageParameterBean> imageParameterCache;
+    private boolean firstOpen = false;
+//    public PictureView(FileBean fileBean, String token) {
+//        this.fileBean = fileBean;
+//        this.fileServe = new FileServe(token);
+//    }
 
-    public PictureView(FileBean fileBean, String token) {
+    public PictureView(FileBean fileBean, String token, TableView<FileBean> tableView) {
         this.fileBean = fileBean;
         this.fileServe = new FileServe(token);
+        this.tableView = tableView;
     }
 
     @Override
@@ -81,13 +89,11 @@ public class PictureView extends Application {
         service.start();
 
         scene.setOnKeyReleased(keyEvent -> upOrDownPicture(keyEvent, primaryStage));
-
     }
 
 
     private List<FileBean> initPictureArrayListAndImageCacheAndImageParameterCache(FileBean fileBean) {
-        List<FileBean> pictureArrayList =
-                fileServe.getNonDirectory(fileBean.getParentPath()).stream().filter(e -> e.getMime().contains("image")).collect(Collectors.toList());
+        List<FileBean> pictureArrayList = tableView.getItems().stream().filter(e -> e.getMime().contains("image")).collect(Collectors.toList());
 
         imageCache = new ConcurrentHashMap<>(pictureArrayList.size());
 
@@ -96,6 +102,7 @@ public class PictureView extends Application {
         for (int i = 0; i < pictureArrayList.size(); i++) {
             if (fileBean.getPath().equals(pictureArrayList.get(i).getPath())) {
                 currentIndex = i;
+                firstOpen = true;
                 break;
             }
         }
@@ -135,8 +142,11 @@ public class PictureView extends Application {
                             primaryStage.setHeight(imageParameterBean.getHeight());
                             primaryStage.setWidth(imageParameterBean.getWidth());
 
-                            //居中
-                            primaryStage.centerOnScreen();
+                            if (firstOpen) {
+                                //居中
+                                primaryStage.centerOnScreen();
+                                firstOpen = false;
+                            }
                         });
 
                         return null;

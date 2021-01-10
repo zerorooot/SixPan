@@ -569,7 +569,7 @@ public class FileList implements Initializable {
      */
     private void openPictureView(FileBean fileBean, String token) {
         Stage stage1 = new Stage();
-        PictureView pictureView = new PictureView(fileBean, token);
+        PictureView pictureView = new PictureView(fileBean, token, table);
         pictureView.start(stage1);
     }
 
