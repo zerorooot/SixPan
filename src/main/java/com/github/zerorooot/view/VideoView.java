@@ -166,10 +166,11 @@ public class VideoView extends Application {
 
     /**
      * 当鼠标移到顶端时，显示进度条
+     *
      * @param mouseEvent mouseEvent
-     * @param root pane
+     * @param root       pane
      */
-    private void showProgressBarWhenMouseUp(MouseEvent mouseEvent,BorderPane root) {
+    private void showProgressBarWhenMouseUp(MouseEvent mouseEvent, BorderPane root) {
         double screenHeight = Screen.getPrimary().getBounds().getHeight();
         if (primaryStage.isFullScreen()) {
             if (mouseEvent.getY() <= 30) {
@@ -273,7 +274,7 @@ public class VideoView extends Application {
             alert.setTitle("ERROR Dialog");
             alert.setHeaderText(errorMessage);
             alert.setContentText(e.getMessage());
-// Create expandable Exception.
+            // Create expandable Exception.
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
@@ -298,8 +299,9 @@ public class VideoView extends Application {
             // Set expandable Exception into the dialog pane.
             alert.getDialogPane().setExpandableContent(expContent);
             ButtonType buttonTypeOk = new ButtonType("OK");
+            ButtonType buttonTypeClose = new ButtonType("关闭页面");
             ButtonType buttonTypeDeleteVideo = new ButtonType("删除视频");
-            alert.getButtonTypes().setAll(buttonTypeOk, buttonTypeDeleteVideo);
+            alert.getButtonTypes().setAll(buttonTypeOk, buttonTypeClose, buttonTypeDeleteVideo);
 
             Optional<ButtonType> result = alert.showAndWait();
             result.ifPresent(buttonType -> {
@@ -310,9 +312,13 @@ public class VideoView extends Application {
                     if (Objects.nonNull(offLineBean)) {
                         fileServe.offLineDelete(offLineBean);
                     }
-
+                    primaryStage.close();
                 }
-                primaryStage.close();
+
+                if (buttonType == buttonTypeClose) {
+                    primaryStage.close();
+                }
+
             });
 
         });
