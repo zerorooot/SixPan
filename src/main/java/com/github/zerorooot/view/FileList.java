@@ -494,6 +494,12 @@ public class FileList implements Initializable {
         if (e.getCode() == KeyCode.DELETE) {
             getDeleteItem(new ActionEvent());
         }
+        if (e.getCode() == KeyCode.ENTER) {
+            enterNextOrPlay();
+        }
+        if (e.isControlDown() & e.getCode() == KeyCode.F) {
+            getSearchFileItem(new ActionEvent());
+        }
 
     }
 
@@ -506,30 +512,37 @@ public class FileList implements Initializable {
     @SneakyThrows
     private void tableClick(MouseEvent e, int clickCount) {
         if (e.getClickCount() == clickCount) {
-            FileBean fileBean = table.getSelectionModel().getSelectedItem();
-            //下一个文件
-            if (Objects.nonNull(fileBean)) {
-                if (fileBean.isDirectory()) {
-                    currentSelectionRow = table.getSelectionModel().getSelectedIndex();
+            enterNextOrPlay();
+        }
+    }
 
-                    fileBeanObservableList.clear();
-                    fileBeanObservableList.addAll(fileServe.getFileAll(fileBean.getPath()));
-                    table.setItems(fileBeanObservableList);
-                    label.setText(fileBean.getPath());
-                } else {
-                    if (fileBean.getMime().contains("image")) {
-                        //图片浏览
-                        openPictureView(fileBean, token);
-                        return;
-                    }
-                    //视频浏览
-                    if (fileBean.getMime().contains("video")) {
-                        openVideoView(fileBean);
-                        return;
-                    }
-                    //都不是就显示文件信息
-                    getFileInfoItem(new ActionEvent());
+    /**
+     * 进入下一级/播放视频/打开图片/显示文件信息
+     */
+    private void enterNextOrPlay() {
+        FileBean fileBean = table.getSelectionModel().getSelectedItem();
+        //下一个文件
+        if (Objects.nonNull(fileBean)) {
+            if (fileBean.isDirectory()) {
+                currentSelectionRow = table.getSelectionModel().getSelectedIndex();
+
+                fileBeanObservableList.clear();
+                fileBeanObservableList.addAll(fileServe.getFileAll(fileBean.getPath()));
+                table.setItems(fileBeanObservableList);
+                label.setText(fileBean.getPath());
+            } else {
+                if (fileBean.getMime().contains("image")) {
+                    //图片浏览
+                    openPictureView(fileBean, token);
+                    return;
                 }
+                //视频浏览
+                if (fileBean.getMime().contains("video")) {
+                    openVideoView(fileBean);
+                    return;
+                }
+                //都不是就显示文件信息
+                getFileInfoItem(new ActionEvent());
             }
         }
     }

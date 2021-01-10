@@ -3,22 +3,16 @@ package com.github.zerorooot.view;
 import com.github.zerorooot.bean.TokenBean;
 import com.github.zerorooot.serve.LoginServe;
 import com.github.zerorooot.util.PropertiesUtil;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import lombok.SneakyThrows;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -39,7 +33,6 @@ public class AutoLogin extends Preloader {
             load(primaryStage);
         }).start();
 
-//        login(primaryStage);
 
     }
 
