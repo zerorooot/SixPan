@@ -35,6 +35,7 @@
                     <MenuItem onAction="#getFlushItem" text="刷新文件"/>
                     <MenuItem onAction="#getDownloadItem" text="获取链接"/>
                     <MenuItem onAction="#forcePlay" text="强行播放"/>
+                    <MenuItem onAction="#exitLogin" text="退出登录"/>
                 </Menu>
                 <Menu text="离线相关">
                     <MenuItem onAction="#getAddOffLineItem" text="离线下载"/>

@@ -462,6 +462,17 @@ public class FileList implements Initializable {
     }
 
     /**
+     * 退出登录
+     *
+     * @param actionEvent actionEvent
+     */
+    public void exitLogin(ActionEvent actionEvent) {
+        Stage stage = (Stage) table.getScene().getWindow();
+        AutoLogin autoLogin = new AutoLogin();
+        autoLogin.login(stage);
+    }
+
+    /**
      * 进入下一级，返回上一级，
      *
      * @param e
