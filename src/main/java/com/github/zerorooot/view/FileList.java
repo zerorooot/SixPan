@@ -111,9 +111,11 @@ public class FileList implements Initializable {
      * @param t CellEditEvent
      */
     public void rename(TableColumn.CellEditEvent<FileBean, String> t) {
-        FileBean fileBean = t.getRowValue();
-        (t.getTableView().getItems().get(t.getTablePosition().getRow())).setName(t.getNewValue());
-        fileServe.rename(fileBean, t.getNewValue());
+        Platform.runLater(() -> {
+            FileBean fileBean = t.getRowValue();
+            (t.getTableView().getItems().get(t.getTablePosition().getRow())).setName(t.getNewValue());
+            fileServe.rename(fileBean, t.getNewValue());
+        });
     }
 
     /**
@@ -644,7 +646,7 @@ public class FileList implements Initializable {
         if (Objects.nonNull(table.getSelectionModel().getSelectedItem())) {
             table.setEditable(true);
             int selectedRowIndex = table.getSelectionModel().getSelectedIndex();
-            table.edit(selectedRowIndex, table.getColumns().get(1));
+            table.edit(selectedRowIndex, table.getColumns().get(0));
             table.setEditable(false);
         }
     }
