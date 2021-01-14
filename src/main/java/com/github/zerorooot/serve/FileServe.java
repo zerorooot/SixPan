@@ -87,9 +87,10 @@ public class FileServe {
      *
      * @param fileBeanArrayList 要移动的list
      * @param newPath           新目录
+     * @return error message
      */
-    public void move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
-         fileControl.move(fileBeanArrayList, newPath);
+    public String move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
+         return fileControl.move(fileBeanArrayList, newPath);
     }
 
     /**

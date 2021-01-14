@@ -220,7 +220,10 @@ public class FileList implements Initializable {
         //移动
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(path -> {
-            fileServe.move(moveFileBeanArrayList, path);
+            String message = fileServe.move(moveFileBeanArrayList, path);
+            if (Objects.nonNull(message)) {
+                alert("移动失败", "error", message);
+            }
             flush();
         });
 
@@ -266,15 +269,23 @@ public class FileList implements Initializable {
             stringBuffer.append(s.toString());
             stringBuffer.append("\n");
         });
+        String headerText = getSelectFileBeanArrayList().get(0).getName();
+        String body = stringBuffer.toString();
+        alert("文件信息", headerText, body);
+    }
 
+    /**
+     * 显示对话框
+     * @param title title
+     * @param headerText headerText
+     * @param body body
+     */
+    private void alert(String title, String headerText, String body) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("文件信息");
-        alert.setHeaderText(getSelectFileBeanArrayList().get(0).getName());
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
 
-        String fileInfo = stringBuffer.toString();
-
-
-        TextArea textArea = new TextArea(fileInfo);
+        TextArea textArea = new TextArea(body);
         textArea.setEditable(false);
         textArea.setWrapText(true);
 

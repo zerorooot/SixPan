@@ -6,6 +6,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.github.zerorooot.bean.*;
 import lombok.AllArgsConstructor;
 
@@ -128,8 +129,9 @@ public class FileControl {
      *
      * @param fileBeanArrayList 要移动的list
      * @param newPath           移动的目录
+     * @return error message
      */
-    public void move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
+    public String move(ArrayList<FileBean> fileBeanArrayList, String newPath) {
         String url = ApiUrl.MOVE;
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
@@ -139,7 +141,12 @@ public class FileControl {
         HttpRequest post = HttpUtil.createPost(url);
         post.header("authorization", token);
         post.body(jsonObject.toString());
-        post.executeAsync();
+        JSONObject jsonBody = JSONUtil.parseObj(post.execute().body());
+        //{"success":false,"status":404,"reference":"FILE_NOT_FOUND","message":"文件未找到"}
+        if (!jsonBody.isNull("success")) {
+            return jsonBody.toString();
+        }
+        return null;
     }
 
     /**
@@ -162,7 +169,7 @@ public class FileControl {
      * 获取单个文件下载url
      *
      * @param identity 文件识别号
-     * @return  下载url
+     * @return 下载url
      */
     public String download(String identity) {
         String url = ApiUrl.DOWNLOAD;
@@ -178,10 +185,11 @@ public class FileControl {
 
     /**
      * 打包下载
+     *
      * @param fileBeanArrayList bean list
      * @return 下载链接 or null
      */
-    public String download(ArrayList<FileBean> fileBeanArrayList ) {
+    public String download(ArrayList<FileBean> fileBeanArrayList) {
         String url = ApiUrl.PACKUP_DOWNLOAD;
         JSONArray jsonArray = new JSONArray();
         for (FileBean fileBean : fileBeanArrayList) {
@@ -200,6 +208,7 @@ public class FileControl {
 
     /**
      * 图片预览
+     *
      * @param identity 图片id
      * @return picture bean
      */
@@ -271,7 +280,6 @@ public class FileControl {
 
     /**
      * 获取离线下载列表
-     *
      */
     public ArrayList<OffLineBean> getOffLine() {
         String url = ApiUrl.OFFLINE_LIST;
@@ -297,7 +305,6 @@ public class FileControl {
 
     /**
      * 把离线已完成的文件从离线列表中移除(不删除文件)
-     *
      */
     public void deleteComplete() {
         String url = ApiUrl.DELETE_COMPLETE;
@@ -347,7 +354,7 @@ public class FileControl {
         ArrayList<FileBean> fileBeanArrayList = new ArrayList<>();
 
         for (int i = 0; i < returnJson.size(); i++) {
-            FileBean fileBean=setTimeAndPath(returnJson, i);
+            FileBean fileBean = setTimeAndPath(returnJson, i);
 
             fileBeanArrayList.add(fileBean);
         }
@@ -356,8 +363,9 @@ public class FileControl {
 
     /**
      * 设置bean中的文件大小和路径
+     *
      * @param returnJson json字符串
-     * @param i 位置
+     * @param i          位置
      * @return bean
      */
     private FileBean setTimeAndPath(JSONArray returnJson, int i) {
