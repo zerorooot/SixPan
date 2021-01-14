@@ -115,6 +115,7 @@ public class FileList implements Initializable {
             FileBean fileBean = t.getRowValue();
             (t.getTableView().getItems().get(t.getTablePosition().getRow())).setName(t.getNewValue());
             fileServe.rename(fileBean, t.getNewValue());
+            flush();
         });
     }
 
