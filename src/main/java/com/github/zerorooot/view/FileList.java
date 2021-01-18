@@ -2,6 +2,7 @@ package com.github.zerorooot.view;
 
 import cn.hutool.core.io.unit.DataSizeUtil;
 import cn.hutool.crypto.digest.MD5;
+import cn.hutool.http.HttpUtil;
 import com.github.zerorooot.bean.FileBean;
 import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.serve.FileServe;
@@ -14,6 +15,8 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -22,13 +25,17 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -287,15 +294,17 @@ public class FileList implements Initializable {
     }
 
     /**
-     * 显示对话框
-     *
-     * @param title      title
+     * 返回基础对话框样式
+     * @param title title
+     * @param contentText contentText
      * @param headerText headerText
-     * @param body       body
+     * @param body body
+     * @return Alert
      */
-    private void alert(String title, String headerText, String body) {
+    private Alert alert(String title, String contentText, String headerText, String body) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
+        alert.setContentText(contentText);
         alert.setHeaderText(headerText);
 
         TextArea textArea = new TextArea(body);
@@ -313,6 +322,18 @@ public class FileList implements Initializable {
 
         alert.getDialogPane().setExpandableContent(gridPane);
 
+        return alert;
+    }
+
+    /**
+     * 显示对话框
+     *
+     * @param title      title
+     * @param headerText headerText
+     * @param body       body
+     */
+    private void alert(String title, String headerText, String body) {
+        Alert alert = alert(title, null, headerText, body);
         alert.showAndWait();
     }
 
@@ -486,6 +507,51 @@ public class FileList implements Initializable {
     }
 
     /**
+     * 读取文件,使用系统默认的编码读取
+     *
+     * @param actionEvent
+     */
+    public void readText(ActionEvent actionEvent) {
+        FileBean selectedItem = table.getSelectionModel().getSelectedItem();
+        byte[] content = "不能读取文件夹".getBytes(Charset.defaultCharset());
+        if (!selectedItem.isDirectory()) {
+            //文件大小小于10m
+            if (selectedItem.getSize() <= 10485760) {
+                String downloadUrl = fileServe.download(selectedItem);
+                content = HttpUtil.downloadBytes(downloadUrl);
+            } else {
+                content = "文件太大啦~，下载后在好好看吧o(>﹏<)o".getBytes(Charset.defaultCharset());
+            }
+        }
+        Alert alert = alert(selectedItem.getName(), null, "文件内容", new String(content, Charset.defaultCharset()));
+        HBox hBox = new HBox();
+        Label label = new Label("文件编码: ");
+        TextField encodeTextField = new TextField(Charset.defaultCharset().toString());
+
+
+        hBox.getChildren().addAll(label, encodeTextField);
+        hBox.setAlignment(Pos.CENTER);
+
+        GridPane gridPane = (GridPane) alert.getDialogPane().getExpandableContent();
+        TextArea textArea = (TextArea) gridPane.getChildren().get(0);
+
+        gridPane.add(hBox, 0, 1);
+
+
+        byte[] finalContent = content;
+        encodeTextField.setOnKeyReleased(e -> {
+            try {
+                textArea.setText(new String(finalContent, encodeTextField.getText()));
+            } catch (UnsupportedEncodingException ignored) {
+            }
+        });
+        encodeTextField.setOnMouseClicked(e->{
+            encodeTextField.setText("");
+        });
+        alert.showAndWait();
+    }
+
+    /**
      * 退出登录
      *
      * @param actionEvent actionEvent
@@ -576,6 +642,11 @@ public class FileList implements Initializable {
                 //视频浏览
                 if (fileBean.getMime().contains("video")) {
                     openVideoView(fileBean);
+                    return;
+                }
+                //text
+                if (fileBean.getMime().contains("text") || fileBean.getName().contains(".txt")) {
+                    readText(new ActionEvent());
                     return;
                 }
                 //都不是就显示文件信息
