@@ -78,11 +78,7 @@ public class FileControl {
         ArrayList<FileBean> fileBeanLinkedList = new ArrayList<>();
 
         for (int i = 0; i < dataList.size(); i++) {
-            FileBean fileBean = setTimeAndPath(dataList, i);
-
-            long size = fileBean.getSize();
-            fileBean.setSizeString(DataSizeUtil.format(size));
-
+            FileBean fileBean = setTimeAndPathAndSize(dataList, i);
 
             fileBeanLinkedList.add(fileBean);
         }
@@ -355,8 +351,7 @@ public class FileControl {
         ArrayList<FileBean> fileBeanArrayList = new ArrayList<>();
 
         for (int i = 0; i < returnJson.size(); i++) {
-            FileBean fileBean = setTimeAndPath(returnJson, i);
-
+            FileBean fileBean = setTimeAndPathAndSize(returnJson, i);
             fileBeanArrayList.add(fileBean);
         }
         return fileBeanArrayList;
@@ -378,7 +373,7 @@ public class FileControl {
      * @param i          位置
      * @return bean
      */
-    private FileBean setTimeAndPath(JSONArray returnJson, int i) {
+    private FileBean setTimeAndPathAndSize(JSONArray returnJson, int i) {
         JSONObject object = returnJson.getJSONObject(i);
         FileBean fileBean = object.toBean(FileBean.class);
         fileBean.setDateTime(DateUtil.date(fileBean.getAtime()).toString());
@@ -388,6 +383,8 @@ public class FileControl {
         } else {
             fileBean.setParentPath(path.substring(0, path.lastIndexOf("/")));
         }
+        long size = fileBean.getSize();
+        fileBean.setSizeString(DataSizeUtil.format(size));
         return fileBean;
     }
 
