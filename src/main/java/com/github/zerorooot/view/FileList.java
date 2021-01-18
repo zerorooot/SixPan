@@ -1,6 +1,7 @@
 package com.github.zerorooot.view;
 
 import cn.hutool.core.io.unit.DataSizeUtil;
+import cn.hutool.crypto.digest.MD5;
 import com.github.zerorooot.bean.FileBean;
 import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.serve.FileServe;
@@ -29,6 +30,7 @@ import lombok.SneakyThrows;
 
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @Author: zero
@@ -240,12 +242,21 @@ public class FileList implements Initializable {
         dialog.setTitle("新建文件夹");
         dialog.setHeaderText("文件夹名");
         dialog.setContentText("请输入新的文件夹的名称：");
+
+        AtomicReference<String> currentIdentity = new AtomicReference<>("");
+        CheckBox checkBox = new CheckBox("仅搜索当前目录");
+        checkBox.setSelected(true);
+        dialog.getDialogPane().setExpandableContent(checkBox);
+
         Optional<String> result = dialog.showAndWait();
 
         //刷新
         result.ifPresent(name -> {
+            if (checkBox.isSelected()) {
+                currentIdentity.set(MD5.create().digestHex(label.getText()));
+            }
             fileBeanObservableList.clear();
-            fileBeanObservableList.addAll(fileServe.searchFile(name));
+            fileBeanObservableList.addAll(fileServe.searchFile(currentIdentity.get(), name));
             table.setItems(fileBeanObservableList);
         });
     }
@@ -277,9 +288,10 @@ public class FileList implements Initializable {
 
     /**
      * 显示对话框
-     * @param title title
+     *
+     * @param title      title
      * @param headerText headerText
-     * @param body body
+     * @param body       body
      */
     private void alert(String title, String headerText, String body) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

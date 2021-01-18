@@ -218,4 +218,14 @@ public class FileServe {
         return fileControl.searchFile(name);
     }
 
+    /**
+     * 搜索文件
+     * @param parentIdentity parentIdentity
+     * @param name 文件名
+     * @return ArrayList
+     */
+    public ArrayList<FileBean> searchFile(String parentIdentity, String name) {
+        return fileControl.searchFile(parentIdentity, name);
+    }
+
 }

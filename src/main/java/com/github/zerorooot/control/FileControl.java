@@ -337,15 +337,16 @@ public class FileControl {
 
     /**
      * 搜索文件
-     *
+     * @param parentIdentity parentIdentity
      * @param fileName 文件名
+     * @return ArrayList
      */
-    public ArrayList<FileBean> searchFile(String fileName) {
+    public ArrayList<FileBean> searchFile(String parentIdentity, String fileName) {
         String url = ApiUrl.LIST;
         JSONObject jsonObject = new JSONObject();
         jsonObject.set("limit", -1);
         jsonObject.set("name", fileName);
-        jsonObject.set("parentIdentity", "");
+        jsonObject.set("parentIdentity", parentIdentity);
         jsonObject.set("search", true);
         HttpRequest post = HttpUtil.createPost(url);
         post.header("authorization", token);
@@ -359,6 +360,15 @@ public class FileControl {
             fileBeanArrayList.add(fileBean);
         }
         return fileBeanArrayList;
+    }
+
+    /**
+     * 搜索文件
+     *
+     * @param fileName 文件名
+     */
+    public ArrayList<FileBean> searchFile(String fileName) {
+        return searchFile("", fileName);
     }
 
     /**
