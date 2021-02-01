@@ -16,7 +16,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -35,8 +34,8 @@ import lombok.SneakyThrows;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -44,6 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @Date: 2020/8/19 21:13
  * TODO
  * 进入下一级loading
+ * 记忆currentSelectionRow（使用map）
  */
 @NoArgsConstructor
 public class FileList implements Initializable {
@@ -59,6 +59,9 @@ public class FileList implements Initializable {
     private boolean existOffLineTable;
     private int currentSelectionRow;
     private Stage offLineTableStage;
+
+    //文件列表的缓存
+    private ConcurrentHashMap<String, ArrayList<FileBean>> fileListCache = new ConcurrentHashMap<>();
 
     public void setToken(String token) {
         this.token = token;
@@ -104,6 +107,9 @@ public class FileList implements Initializable {
         ArrayList<FileBean> fileBeanArrayList = fileServe.getFileAll("/");
         fileBeanObservableList.addAll(fileBeanArrayList);
         table.setItems(fileBeanObservableList);
+
+        //set cache
+        fileListCache.put("/", fileBeanArrayList);
 
         //设置右键菜单
         table.setOnContextMenuRequested(event -> {
@@ -152,9 +158,7 @@ public class FileList implements Initializable {
         //刷新
         result.ifPresent(name -> {
             fileServe.createFolder(label.getText(), name);
-            fileBeanObservableList.clear();
-            fileBeanObservableList.addAll(fileServe.getFileAll(label.getText()));
-            table.setItems(fileBeanObservableList);
+            flush();
         });
     }
 
@@ -349,6 +353,12 @@ public class FileList implements Initializable {
         //防止删除时卡顿
         new Thread(() -> {
             table.getItems().removeAll(deleteFileBeanArrayList);
+
+            //update cache
+            ArrayList<FileBean> fileAll = new ArrayList<>(table.getItems());
+            fileListCache.put(label.getText(), fileAll);
+
+            //delete
             fileServe.delete(deleteFileBeanArrayList);
         }).start();
     }
@@ -632,9 +642,18 @@ public class FileList implements Initializable {
                 currentSelectionRow = table.getSelectionModel().getSelectedIndex();
 
                 fileBeanObservableList.clear();
-                fileBeanObservableList.addAll(fileServe.getFileAll(fileBean.getPath()));
+                String path = fileBean.getPath();
+                ArrayList<FileBean> fileAll = fileListCache.get(path);
+                if (fileListCache.get(path) == null) {
+                    fileAll = fileServe.getFileAll(path);
+                    //put cache
+                    fileListCache.put(path, fileAll);
+                }
+
+                fileBeanObservableList.addAll(fileAll);
                 table.setItems(fileBeanObservableList);
                 label.setText(fileBean.getPath());
+
             } else {
                 if (fileBean.getMime().contains("image")) {
                     //图片浏览
@@ -719,8 +738,11 @@ public class FileList implements Initializable {
      */
     private void flush() {
         fileBeanObservableList.clear();
-        fileBeanObservableList.addAll(fileServe.getFileAll(label.getText()));
+        ArrayList<FileBean> fileAll = fileServe.getFileAll(label.getText());
+        fileBeanObservableList.addAll(fileAll);
         table.setItems(fileBeanObservableList);
+        //update cache
+        fileListCache.put(label.getText(), fileAll);
     }
 
     /**
@@ -737,7 +759,14 @@ public class FileList implements Initializable {
                 path = (path.substring(0, path.lastIndexOf("/")));
             }
             fileBeanObservableList.clear();
-            fileBeanObservableList.addAll(fileServe.getFileAll(path));
+
+            //get cache
+            if (fileListCache.get(path) == null) {
+                fileBeanObservableList.addAll(fileServe.getFileAll(path));
+            } else {
+                fileBeanObservableList.addAll(fileListCache.get(path));
+            }
+
             table.setItems(fileBeanObservableList);
             label.setText(path);
 
