@@ -40,6 +40,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * @Author: zero
@@ -199,7 +200,12 @@ public class FileList implements Initializable {
         borderPane.setCenter(moveTable);
 
         ObservableList<FileBean> moveFileBeanObservableList = FXCollections.observableArrayList();
-        ArrayList<FileBean> directoryFileBeanArrayList = fileServe.getDirectory(moveLabel.getText());
+        //use cache
+        ArrayList<FileBean> directoryFileBeanArrayList = (ArrayList<FileBean>) fileListCache.get(moveLabel.getText())
+                .stream().filter(FileBean::isDirectory).collect(Collectors.toList());
+        if (fileListCache.get(moveLabel.getText()) == null) {
+            directoryFileBeanArrayList = fileServe.getDirectory(moveLabel.getText());
+        }
         moveFileBeanObservableList.addAll(directoryFileBeanArrayList);
         moveTable.setItems(moveFileBeanObservableList);
 
@@ -211,7 +217,13 @@ public class FileList implements Initializable {
             if (event.getClickCount() == 2) {
                 FileBean fileBean = moveTable.getSelectionModel().getSelectedItem();
                 moveFileBeanObservableList.clear();
-                moveFileBeanObservableList.addAll(fileServe.getDirectory(fileBean.getPath()));
+                //use cache
+                if (fileListCache.get(fileBean.getPath()) == null) {
+                    moveFileBeanObservableList.addAll(fileServe.getDirectory(fileBean.getPath()));
+                } else {
+                    List<FileBean> collect = fileListCache.get(fileBean.getPath()).stream().filter(FileBean::isDirectory).collect(Collectors.toList());
+                    moveFileBeanObservableList.addAll(collect);
+                }
                 moveTable.setItems(moveFileBeanObservableList);
                 moveLabel.setText(fileBean.getPath());
 
@@ -230,7 +242,14 @@ public class FileList implements Initializable {
                 }
                 moveLabel.setText(path);
                 moveFileBeanObservableList.clear();
-                moveFileBeanObservableList.addAll(fileServe.getDirectory(path));
+                //use cache
+                if (fileListCache.get(path) == null) {
+                    moveFileBeanObservableList.addAll(fileServe.getDirectory(path));
+                } else {
+                    List<FileBean> collect =
+                            fileListCache.get(path).stream().filter(FileBean::isDirectory).collect(Collectors.toList());
+                    moveFileBeanObservableList.addAll(collect);
+                }
                 moveTable.setItems(moveFileBeanObservableList);
                 //滚动
                 moveTableScroll(moveTable, path);
