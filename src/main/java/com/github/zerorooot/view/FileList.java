@@ -5,6 +5,7 @@ import cn.hutool.crypto.digest.MD5;
 import cn.hutool.http.HttpUtil;
 import com.github.zerorooot.bean.FileBean;
 import com.github.zerorooot.bean.OffLineBean;
+import com.github.zerorooot.bean.SelectAndScrollBean;
 import com.github.zerorooot.serve.FileServe;
 import com.github.zerorooot.util.ClipBoardUtil;
 import javafx.application.Platform;
@@ -21,6 +22,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.control.skin.TableViewSkin;
+import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -43,7 +46,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * @Date: 2020/8/19 21:13
  * TODO
  * 进入下一级loading
- * 记忆currentSelectionRow（使用map）
  */
 @NoArgsConstructor
 public class FileList implements Initializable {
@@ -62,6 +64,8 @@ public class FileList implements Initializable {
 
     //文件列表的缓存
     private ConcurrentHashMap<String, ArrayList<FileBean>> fileListCache = new ConcurrentHashMap<>();
+    //之前位置的缓存
+    private final ConcurrentHashMap<String, SelectAndScrollBean> positionAndSelectRowCache = new ConcurrentHashMap<>();
 
     public void setToken(String token) {
         this.token = token;
@@ -366,7 +370,7 @@ public class FileList implements Initializable {
     /**
      * 打开离线下载页面
      *
-     * @param actionEvent
+     * @param actionEvent actionEvent
      */
     @SneakyThrows
     public void getAddOffLineItem(ActionEvent actionEvent) {
@@ -521,7 +525,7 @@ public class FileList implements Initializable {
     /**
      * 读取文件,使用系统默认的编码读取
      *
-     * @param actionEvent
+     * @param actionEvent actionEvent
      */
     public void readText(ActionEvent actionEvent) {
         FileBean selectedItem = table.getSelectionModel().getSelectedItem();
@@ -639,10 +643,13 @@ public class FileList implements Initializable {
         //下一个文件
         if (Objects.nonNull(fileBean)) {
             if (fileBean.isDirectory()) {
-                currentSelectionRow = table.getSelectionModel().getSelectedIndex();
+                String path = fileBean.getPath();
+                //set select row and position
+                SelectAndScrollBean selectAndScrollBean = setScroll(table.getSelectionModel().getSelectedIndex());
+                positionAndSelectRowCache.put(fileBean.getParentPath(), selectAndScrollBean);
 
                 fileBeanObservableList.clear();
-                String path = fileBean.getPath();
+
                 ArrayList<FileBean> fileAll = fileListCache.get(path);
                 if (fileListCache.get(path) == null) {
                     fileAll = fileServe.getFileAll(path);
@@ -676,6 +683,12 @@ public class FileList implements Initializable {
         }
     }
 
+    private SelectAndScrollBean setScroll(int position) {
+        //https://stackoverflow.com/questions/25232157/keeping-selected-row-in-the-middle-of-a-tablview-control/48961926
+        TableViewSkin<?> ts = (TableViewSkin<?>) table.getSkin();
+        VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(1);
+        return new SelectAndScrollBean(position, vf.getFirstVisibleCell().getIndex());
+    }
 
     /**
      * 打开显示图片窗口
@@ -770,8 +783,12 @@ public class FileList implements Initializable {
             table.setItems(fileBeanObservableList);
             label.setText(path);
 
-            table.getSelectionModel().select(currentSelectionRow);
-            table.scrollTo(currentSelectionRow);
+            //scroll and select
+            SelectAndScrollBean selectAndScrollBean = positionAndSelectRowCache.get(path);
+            if (selectAndScrollBean != null) {
+                table.getSelectionModel().select(selectAndScrollBean.getSelectRow());
+                table.scrollTo(selectAndScrollBean.getScroll());
+            }
 
         }
     }
