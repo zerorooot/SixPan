@@ -203,6 +203,9 @@ public class FileList implements Initializable {
         moveFileBeanObservableList.addAll(directoryFileBeanArrayList);
         moveTable.setItems(moveFileBeanObservableList);
 
+        //选中和滚动
+        moveTableScroll(moveTable, moveLabel.getText());
+
         //双击进入下一级
         moveTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
@@ -211,6 +214,9 @@ public class FileList implements Initializable {
                 moveFileBeanObservableList.addAll(fileServe.getDirectory(fileBean.getPath()));
                 moveTable.setItems(moveFileBeanObservableList);
                 moveLabel.setText(fileBean.getPath());
+
+                //滚动
+                moveTableScroll(moveTable, moveLabel.getText());
             }
         });
         //返回上一级
@@ -226,6 +232,8 @@ public class FileList implements Initializable {
                 moveFileBeanObservableList.clear();
                 moveFileBeanObservableList.addAll(fileServe.getDirectory(path));
                 moveTable.setItems(moveFileBeanObservableList);
+                //滚动
+                moveTableScroll(moveTable, path);
             }
         });
         dialog.getDialogPane().setContent(borderPane);
@@ -245,7 +253,21 @@ public class FileList implements Initializable {
             }
             flush();
         });
+    }
 
+    /**
+     * 移动文件功能的窗口滚动
+     *
+     * @param moveTable 移动文件功能的窗口
+     * @param path      path
+     */
+    private void moveTableScroll(TableView<FileBean> moveTable, String path) {
+        SelectAndScrollBean scrollBean = positionAndSelectRowCache.get(path);
+        if (scrollBean != null) {
+            //窗口尺寸不同，无法完美滚动
+            moveTable.scrollTo(scrollBean.getSelectRow());
+            moveTable.getSelectionModel().select(scrollBean.getSelectRow());
+        }
     }
 
     /**
@@ -660,6 +682,7 @@ public class FileList implements Initializable {
                 fileBeanObservableList.addAll(fileAll);
                 table.setItems(fileBeanObservableList);
                 label.setText(fileBean.getPath());
+                table.scrollTo(0);
 
             } else {
                 if (fileBean.getMime().contains("image")) {
