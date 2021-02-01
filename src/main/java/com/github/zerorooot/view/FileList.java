@@ -172,7 +172,7 @@ public class FileList implements Initializable {
         ButtonType removeButtonType = new ButtonType("移动", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(removeButtonType, ButtonType.CANCEL);
 
-        
+
         Label moveLabel = new Label("/");
         moveLabel.setMaxWidth(Double.MAX_VALUE);
 
@@ -676,7 +676,7 @@ public class FileList implements Initializable {
      * @param fileBean 文件
      */
     private void openVideoView(FileBean fileBean) {
-        VideoView videoView = new VideoView(fileBean, fileServe);
+        VideoView videoView = new VideoView(fileBean, fileServe, fileBeanObservableList);
         openVideoView(videoView);
     }
 

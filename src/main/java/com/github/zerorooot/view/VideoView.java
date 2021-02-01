@@ -6,6 +6,7 @@ import com.github.zerorooot.bean.OffLineBean;
 import com.github.zerorooot.serve.FileServe;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -49,16 +50,19 @@ public class VideoView extends Application {
     private final FileServe fileServe;
     private OffLineBean offLineBean;
     private FileBean fileBean;
+    private ObservableList<FileBean> fileBeanObservableList;
+
 
     private Stage primaryStage;
     private ImageView videoImageView;
     private ProgressBar progressBar;
 
-    public VideoView(FileBean fileBean, FileServe fileServe) {
+    public VideoView(FileBean fileBean, FileServe fileServe, ObservableList<FileBean> fileBeanObservableList) {
         this.mediaPlayerFactory = new MediaPlayerFactory();
         this.embeddedMediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
         this.fileBean = fileBean;
         this.fileServe = fileServe;
+        this.fileBeanObservableList = fileBeanObservableList;
 
         this.url = fileServe.download(fileBean);
         this.name = fileBean.getName();
@@ -308,6 +312,8 @@ public class VideoView extends Application {
                 if (buttonType == buttonTypeDeleteVideo) {
                     if (Objects.nonNull(fileBean)) {
                         fileServe.delete(fileBean);
+                        //同时删除fileList里的文件
+                        fileBeanObservableList.removeAll(fileBean);
                     }
                     if (Objects.nonNull(offLineBean)) {
                         fileServe.offLineDelete(offLineBean);
