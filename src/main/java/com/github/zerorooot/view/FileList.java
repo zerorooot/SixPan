@@ -172,6 +172,7 @@ public class FileList implements Initializable {
         ButtonType removeButtonType = new ButtonType("移动", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(removeButtonType, ButtonType.CANCEL);
 
+        
         Label moveLabel = new Label("/");
         moveLabel.setMaxWidth(Double.MAX_VALUE);
 
@@ -190,7 +191,7 @@ public class FileList implements Initializable {
         borderPane.setCenter(moveTable);
 
         ObservableList<FileBean> moveFileBeanObservableList = FXCollections.observableArrayList();
-        ArrayList<FileBean> directoryFileBeanArrayList = fileServe.getDirectory("/");
+        ArrayList<FileBean> directoryFileBeanArrayList = fileServe.getDirectory(moveLabel.getText());
         moveFileBeanObservableList.addAll(directoryFileBeanArrayList);
         moveTable.setItems(moveFileBeanObservableList);
 
@@ -295,10 +296,11 @@ public class FileList implements Initializable {
 
     /**
      * 返回基础对话框样式
-     * @param title title
+     *
+     * @param title       title
      * @param contentText contentText
-     * @param headerText headerText
-     * @param body body
+     * @param headerText  headerText
+     * @param body        body
      * @return Alert
      */
     private Alert alert(String title, String contentText, String headerText, String body) {
@@ -345,10 +347,10 @@ public class FileList implements Initializable {
     public void getDeleteItem(ActionEvent actionEvent) {
         ArrayList<FileBean> deleteFileBeanArrayList = getSelectFileBeanArrayList();
         //防止删除时卡顿
-        Platform.runLater(() -> {
-            fileServe.delete(deleteFileBeanArrayList);
+        new Thread(() -> {
             table.getItems().removeAll(deleteFileBeanArrayList);
-        });
+            fileServe.delete(deleteFileBeanArrayList);
+        }).start();
     }
 
     /**
@@ -545,7 +547,7 @@ public class FileList implements Initializable {
             } catch (UnsupportedEncodingException ignored) {
             }
         });
-        encodeTextField.setOnMouseClicked(e->{
+        encodeTextField.setOnMouseClicked(e -> {
             encodeTextField.setText("");
         });
         alert.showAndWait();
@@ -640,7 +642,7 @@ public class FileList implements Initializable {
                     return;
                 }
                 //视频浏览
-                if (fileBean.getMime().contains("video")) {
+                if (fileBean.getMime().contains("video") || fileBean.getName().contains(".mp4")) {
                     openVideoView(fileBean);
                     return;
                 }
